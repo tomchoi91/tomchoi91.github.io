@@ -22,7 +22,7 @@ navbar:
       - text: "Squid Game Elimination Analysis"
         href: visualization1.html
       - text: "Milk Production Data Exploration"
-        href: dairy.html
+        href: visualization2.html
   right:
     - icon: fas fa-envelope
       href: contact.html
