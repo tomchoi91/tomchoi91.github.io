@@ -1,8 +1,6 @@
-
 ---
 title: ""
 author: "Dongho Choi"
-date: 
 output: html_document
 ---
 

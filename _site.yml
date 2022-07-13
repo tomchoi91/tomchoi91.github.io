@@ -7,8 +7,6 @@ output_dir: "."
 navbar:
   title: "Dongho Choi"
   left:
-    - text: "Tutorials"
-      href: tutorials.html
     - text: "Research"
       href: research.html
     - text: "Stat/ML"
@@ -23,6 +21,8 @@ navbar:
       menu: 
       - text: "Squid Game Elimination Analysis"
         href: visualization1.html
+      - text: "Milk Production Data Exploration"
+        href: dairy.html
   right:
     - icon: fas fa-envelope
       href: contact.html
