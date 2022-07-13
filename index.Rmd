@@ -1,5 +1,5 @@
 ---
-pagetitle: "Index"
+pagetitle: "Dongho Choi"
 output: html_document
 ---
 
@@ -9,13 +9,11 @@ output: html_document
 <br>
 
 <p align="center">
-<img src="images/profile_pic.jpg" style="width:30%; border:0.5px solid; margin-right: 20px" align="center">
+<img src="images/profile_pic.jpg" style="width:80%; border:0.5px solid; margin-right: 20px" align="center">
 </p>
 <br>
 
-🚨*THIS IS A FICTIONAL PROFILE MEANT AS AN EXAMPLE FOR THE STEPBYSTAT COMMUNITY.* 
-<br><br><br>
-👋🏽 Hello, my name is John Appleseed.
+👋 Hello, my name is Dongho Choi. Please call me Tom.
 
 🎓 Soon to be grad with a M.S. in Data Science at ABC University. (May 2022)
 
