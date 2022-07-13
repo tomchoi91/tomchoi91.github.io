@@ -13,29 +13,20 @@ output: html_document
 </p>
 <br>
 
-👋 Hello, my name is Dongho Choi. Please call me Tom.
+👋 Hello, my name is **Dongho Choi**. Please call me **Tom**. 😊
 
-🎓 Soon to be grad with a M.S. in Data Science at ABC University. (May 2022)
+🎓 I earned a M.A. in Educational Psychology at the University of Nebraska-Lincoln (August 2022). I am getting a M.S. in Statistics as well (August 2023).
 
-🌇 New York City Native, with a passion for developing and applying mathematical and statistical models to hands-on strategies that will grow business.
+💼 Currently working as a graduate research assistant at Nebraska Academy for Methodology, Analytics & Psychometrics at UNL. I have participated in more than a dozen projects with a focus on child education and intervention projects. My responsibility in the projects includes, but is not limited to: Data cleaning, data management, statistical analysis, reporting the results, and supporting journal submission by writing and reviewing methods and results.
 
-📚 **Talk about your past experience, your present experience, and what you did (about 4-5 sentences)**
+💻 As for my future, I hope to one day work as a data analyst/statistician/researcher at schools and/or hospitals
 
-...
+🔍 In my free time, I like watching detective dramas.
 
-💻 **Talk about what you want to do in the future (2 sentences)**
+💪 I have years of experience in educational data and longitudinal data analysis using latent variable models and generalized linear mixed models.
 
-e.g. 💻 As for my future, I hope to one day work as a data analyst/scientist/engineer role and work with a marketing team.
-
-🏔 **Talk about hobbies(1 sentence)**
-
-e.g. 🏔In my free time, you can find me rock climbing.
-
-💪 **Highlight your strengths, use keywords (5-6)**
-
-e.g. 💪 Specialties in analyzing customer-driven data from e-commerce and applying insights to actionable strategies
-
-+ Programming: Python, R
-+ Data visualization: Tableau Software, Power BI
-+ Database: SQL, Postgre SQL, MongoDB, Neo4j
-+ Cloud Computing: AWS, GCP (BigQuery), Azure
++ Programming: R, SAS
++ Statistical analysis: SPSS, Amos, Mplus, FlexMIRT
++ Documentation: R markdown, Microsoft products (Excel, Word, PowerPoint, Outlook)
++ Database: SQL
++ Version control: Git, GitHub

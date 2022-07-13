@@ -1,0 +1,59 @@
+---
+pagetitle: "Research"
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float:
+     collapsed: false
+     smooth_scroll: false
+---
+
+<!-- navbar added -->
+
+<link rel="stylesheet" href="styles.css" type="text/css">
+<link rel="stylesheet" href="site_libs/academicons-1.9.1/css/academicons.min.css"/>
+
+<br>
+
+## PUBLICATIONS
+
+### Journal Articles
+
+- Iruka, I. U., Sheridan, S., Koziol, N., Schumacher, R., Kerby, H., Prokasky, A., & Choi, D.. (2022). Examining malleable factors that explain the end of kindergarten racial/ethnic gaps. Submitted to Elementary School Journal.
+
+- Shin, S., Song, Y., Ha, J., Choi, D. (2017). The Relationship among Stress, Anger, and Problem Drinking in ex-prisoners in Korea. Korean Journal of Probation, 17(2). 197-230. 
+
+- Ha, J., Song, Y., Choi, D. (2017). Survey on Drinking Status of Ex-prisoners in Korea - Focused on Problem Drinking and Psychosocial Factors. Korean Offender Rehabilitation Studies, 3(1), 131-166. 
+
+### Technical Reports
+
+- Reichenberg, R. E., Choi, D., & Nord, J., (2021). 4-H National Call for Data: College & Career Readiness. Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
+
+- Koziol, N., Choi, D., Nord, J., Howell Smith, M. C., & Stevens, J. (2019). 4-H Common Measures 2.0 (CM 2.0): National Call for Data. Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
+
+
+### Manuscripts under review
+
+- Babik, I., Cunha, A. B., Choi, D., Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) The Effect of START-Play Intervention on Reaching-Related Exploratory Behaviors in Children with Neuromotor Delays: Randomized Controlled Trial. Submitted to Physical and Occupational Therapy in Pediatrics.
+
+- Cunha, A. B., Babik, I., Choi, D., Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) The Impact of Severity of Motor Delay, Timing of Task Mastery, and START-Play Intervention on the Development of Means-End Problem Solving in Young Children. Submitted to Research in Developmental Disabilities.
+
+
+## PRESENTATIONS
+
+- Jancart, K. L., Cunha, A. B., Babik, I., Choi, D., Koziol, N., Harbourne, R., Lobo, M., McCoy, S., Willett, S., Bovaird, J., Dusing, S. (2022, September).  Early versus late reaching mastery’s effect on object permanence in infants with motor delays receiving START-Play and usual care-early intervention. Paper will be presented at the 75th Annual Meeting of American Academy for Cerebral Palsy and Developmental Medicine, Las Vegas, Nevada, United States.
+
+- Nugent, G., Chen, K. Soh, L. Choi, D., Trainin, G., Smith, W. (2022, July). Developing K-8 Computer Science Teachers’ Content Knowledge, Self-efficacy, and Attitudes through Evidence-based Professional Development. Paper presented at the 2022 ACM Conference on Innovation and Technology in Computer Science Education, Dublin., Ireland.
+
+- Babik, I., Cunha, A. B., Choi, D., Koziol, N., Hsu, L., Dusing, S., Harbourne, R., McCoy, S., Bovaird, J., Willett, S., Lobo, M. (2022, July). The role of affordances in the home environment in children's motor, cognitive, and language development. Poster presented at the XXIII International Congress of Infant Studies (ICIS) 2022: Developmental Cascades, Westin, Ottawa, United States.
+
+- Choi, D. & Koziol, N. (2022, April). Testing Longitudinal Invariance of Parent Involvement in School using ECLS-K:2011. Poster presented at the 2022 CYFS Summit on Research in Early Childhood, Lincoln., Nebraska, United States.
+
+- Cunha, A. B., Babik, I., Choi, D., Koziol, N., Harbourne, R., McCoy, S., Bovaird, J., & Lobo, M. (2021, April). Performance after mastery of means-end problem solving differs in children with mild versus significant motor delays. Poster presented at the Society for Research in Child Development Biennial Meeting, Virtual.
+
+- Babik, I., Cunha, A. B., Choi, D., Koziol, N., Harbourne, R., Dusing, S. C., McCoy, S. W., Bovaird, J., & Lobo, M. A. (2021, February). START-Play intervention advanced reaching outcomes in children with significant but not mild motor delay. Paper presented to the Combined Sections Meeting of the American Physical Therapy Association, Virtual.
+
+
+
+

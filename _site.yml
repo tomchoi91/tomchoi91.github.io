@@ -9,8 +9,8 @@ navbar:
   left:
     - text: "Tutorials"
       href: tutorials.html
-    - text: "Publication"
-      href: publication.html
+    - text: "Research"
+      href: research.html
     - text: "Stat/ML"
       menu: 
       - text: "Predicting House Prices in Iowa"
