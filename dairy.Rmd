@@ -197,6 +197,7 @@ milk_lbs_breed <- milk_analysis %>%
   labs(title="Milk Pounds by Breed of Cow", x="Breed", y="Milk Pounds") 
 
 ggplotly(milk_lbs_breed)
+
 ```
 
 While we found that Holstein cows produced the most fluid milk, average milk pounds does not accurately represent the true value of the milk, as dairy producers are most often paid based on the component (fat and protein) composition of the milk.  Therefore, we chose to create a similar plot using the metric "Energy Corrected Milk", which standardizes fluid milk pounds as if all cows were producing 3.5% milk fat and 3.2% milk protein (fluid milk pounds based on equivalent energy needed to produce milk fat and milk protein over 3.5% and 3.2%, respectively). While we found that Holsteins continued to be the most productive breed (87.3 lb/d ECM), the gap between the other breeds was narrowed (i.e. 73.2 lb/d ECM from Jerseys) when milk component production was also considered.
@@ -227,6 +228,7 @@ ggplotly(milk_lbs_ecm)
 In order to further explore the concept of milk component differences between breeds, we also generated a bar chart that compared combined fat and protein pounds in the milk (calculated as milk fat % * milk pounds + milk protein % * milk pounds).  The chart was markedly similar to the ECM chart, suggesting that ECM is an appropriate metric for breed milk production comparisons, as milk fat and protein yield are accounted for.
 
 ```{r}
+
 # Compare fat and protein production by breed
 component_lbs <- milk_analysis %>%
   group_by(breed) %>%
@@ -245,6 +247,7 @@ component_lbs <- milk_analysis %>%
   labs(title="Combined Fat and Protein Pounds by Breed of Cow", x="Breed", y="Fat and Protein Pounds") 
 
 ggplotly(component_lbs)
+
 ```
 
 While exploring breed differences, we noted that Jersey and Crossbred milk components were often greater than those of Holsteins, and, when milk fat % was high, protein % also appeared to be high.  Accordingly, we suspected there may be a relationship in the data between milk fat % and protein %.  To answer this question, we generated a scatterplot using ggplot2.  In addition, the summary function was used to determine a linear model of this relationship; the r^2 was relatively strong (0.578), suggesting that as milk fat % goes up in milk, so does milk protein %.  The line calculated was plotted through the data using geom_smooth.
@@ -282,13 +285,14 @@ holstein_by_region <- milk_analysis %>%
   filter(breed=="Holstein") %>%
   group_by(region) %>%
   summarise(a=round(mean(cows_in_milk, na.rm=TRUE),1),
-            b=round(mean(milk_lbs, na.rm=TRUE),1),
+            milk_lbs=round(mean(milk_lbs, na.rm=TRUE),1),
             c=round(mean(fat_pct, na.rm=TRUE),1),
             d=round(mean(protein_pct, na.rm=TRUE),1),
             e=round(mean(fat_protein_lbs, na.rm=TRUE),1),
             f=round(mean(ecm, na.rm=TRUE),1))
 
-holstein_by_region_plot <- ggplot(data=holstein_by_region, aes(x=region, y=b, fill=region)) + geom_bar(stat="identity") +
+holstein_by_region_plot <- holstein_by_region %>%
+  ggplot(aes(x=region, y=milk_lbs, fill=region)) + geom_bar(stat="identity") +
   scale_fill_brewer() +
   # theme_dark() +
   labs(title="Holstein Milk Pounds by Region", x="Region", y="Milk Pounds") +
@@ -298,6 +302,7 @@ ggplotly(holstein_by_region_plot)
 
 ```
 
+
 ```{r}
 # Compare Jersey breed milk production by region
 
@@ -306,13 +311,14 @@ jersey_by_region <- milk_analysis %>%
   filter(breed=="Jersey") %>%
   group_by(region) %>%
   summarise(a=round(mean(cows_in_milk, na.rm=TRUE),1),
-            b=round(mean(milk_lbs, na.rm=TRUE),1),
+            milk_lbs=round(mean(milk_lbs, na.rm=TRUE),1),
             c=round(mean(fat_pct, na.rm=TRUE),1),
             d=round(mean(protein_pct, na.rm=TRUE),1),
             e=round(mean(fat_protein_lbs, na.rm=TRUE),1),
             f=round(mean(ecm, na.rm=TRUE),1))
 
-jersey_by_region_plot <- ggplot(data=jersey_by_region, aes(x=region, y=b, fill=region)) + geom_bar(stat="identity") +
+jersey_by_region_plot <- jersey_by_region%>%
+  ggplot(aes(x=region, y=milk_lbs, fill=region)) + geom_bar(stat="identity") +
   scale_fill_brewer() +
   # theme_dark() +
   labs(title="Jersey Milk Pounds by Region", x="Region", y="Milk Pounds") +
@@ -322,6 +328,7 @@ ggplotly(jersey_by_region_plot)
 
 ```
 
+
 ```{r}
 # Compare Crossbred breed milk production by region
 
@@ -330,13 +337,14 @@ crossbred_by_region <- milk_analysis %>%
   filter(breed=="Crossbred") %>%
   group_by(region) %>%
   summarise(a=round(mean(cows_in_milk, na.rm=TRUE),1),
-            b=round(mean(milk_lbs, na.rm=TRUE),1),
+            milk_lbs=round(mean(milk_lbs, na.rm=TRUE),1),
             c=round(mean(fat_pct, na.rm=TRUE),1),
             d=round(mean(protein_pct, na.rm=TRUE),1),
             e=round(mean(fat_protein_lbs, na.rm=TRUE),1),
             f=round(mean(ecm, na.rm=TRUE),1))
 
-crossbred_by_region_plot <- ggplot(data=crossbred_by_region, aes(x=region, y=b, fill=region)) + geom_bar(stat="identity") +
+crossbred_by_region_plot <- crossbred_by_region %>%
+  ggplot(aes(x=region, y=milk_lbs, fill=region)) + geom_bar(stat="identity") +
   scale_fill_brewer() +
   # theme_dark() +
   labs(title="Crossbred Milk Pounds by Region", x="Region", y="Milk Pounds") +
@@ -356,13 +364,15 @@ In addition to the bar charts above, we also chose to plot the regional Holstein
 milk_histrogram <- milk_analysis %>%
   filter(breed=="Holstein" & region %in% c("PNW", "UMW")) %>%
   ggplot(aes(x=milk_lbs)) + 
-  geom_histogram(aes(color=region), binwidth = 1, position = "identity", alpha=.1) +
-  geom_histogram(data=subset(milk_analysis,
-                             (breed=="Holstein" & region =="NE")),
-                 aes(fill=region), binwidth = 1, position = "identity", alpha=.5) +
-  geom_histogram(data=subset(milk_analysis,
-                           (breed=="Holstein" & !region %in% c("PNW", "UMW", "NE"))),
-               aes(fill=region), binwidth = 1, position = "identity", alpha=.5) +
+  geom_histogram(aes(color=region), 
+                 binwidth = 1, position = "identity", alpha=.1) +
+  geom_histogram(data=subset(milk_analysis, (breed=="Holstein" & region =="NE")),
+                 aes(fill=region), 
+                 binwidth = 1, position = "identity", alpha=.5) +
+  geom_histogram(data=subset(milk_analysis, 
+                             (breed=="Holstein" & !region %in% c("PNW", "UMW", "NE"))),
+               aes(fill=region), 
+               binwidth = 1, position = "identity", alpha=.5) +
   # scale_color_manual(values=c("#FFCCFF", "#FF9933")) +
   scale_fill_manual(values=c("#6666FF", "#CCFF99"), guide="none") +
   # guides(fill=F, color=F) +
@@ -388,15 +398,17 @@ Next, we chose to dig deeper into the regional data to make milk production comp
 milk_by_state <- milk_analysis %>%
   group_by(state) %>%
   summarise(a=round(mean(cows_in_milk, na.rm=TRUE),1),
-            b=round(mean(milk_lbs, na.rm=TRUE),1),
+            milk_lbs=round(mean(milk_lbs, na.rm=TRUE),1),
             c=round(mean(fat_pct, na.rm=TRUE),1),
             d=round(mean(protein_pct, na.rm=TRUE),1),
             e=round(mean(fat_protein_lbs, na.rm=TRUE),1),
             f=round(mean(ecm, na.rm=TRUE),1))
 
-milk_by_state_viz <- plot_usmap(data = subset(milk_by_state, !is.na(state)), values = "b", labels = TRUE) +
+milk_by_state_viz <-  subset(milk_by_state, !is.na(state)) %>%
+    plot_usmap(data= ., values = "milk_lbs", labels = TRUE) +
   scale_fill_gradient(low = "white", high = "red", name = NULL) +
   ggtitle("Average Milk Production (lbs) by State")
+
 ggplotly(milk_by_state_viz)
 
 ```
@@ -406,17 +418,20 @@ ggplotly(milk_by_state_viz)
 
 cows_by_state <- milk_analysis %>%
   group_by(state) %>%
-  summarise(a=round(sum(cows_in_milk, na.rm=TRUE),1),
+  summarise(cows_in_milk=round(sum(cows_in_milk, na.rm=TRUE),1),
             b=round(mean(milk_lbs, na.rm=TRUE),1),
             c=round(mean(fat_pct, na.rm=TRUE),1),
             d=round(mean(protein_pct, na.rm=TRUE),1),
             e=round(mean(fat_protein_lbs, na.rm=TRUE),1),
             f=round(mean(ecm, na.rm=TRUE),1))
 
-cows_by_state_viz <- plot_usmap(data = subset(cows_by_state, !is.na(state)), values = "a", labels = TRUE) +
+cows_by_state_viz <- subset(cows_by_state, !is.na(state)) %>%
+  plot_usmap(data=., values = "cows_in_milk", labels = TRUE) +
   scale_fill_gradient(low = "white", high = "blue", name = NULL) +
   ggtitle("Total Cows Tested by State")
+
 ggplotly(cows_by_state_viz)
+
 ```
 
 ```{r}
