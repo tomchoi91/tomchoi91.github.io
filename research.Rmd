@@ -20,7 +20,7 @@ output:
 
 ### Journal Articles
 
-- Iruka, I. U., Sheridan, S., Koziol, N., Schumacher, R., Kerby, H., Prokasky, A., & Choi, D.. (2022). Examining malleable factors that explain the end of kindergarten racial/ethnic gaps. Submitted to Elementary School Journal.
+- Iruka, Sheridan, S., Koziol, N., Schumacher, R., Kerby, H., Prokasky, A., & Choi, D. (2022). Examining Malleable Factors That Explain the End-of-Kindergarten Racial/Ethnic Gaps. The Elementary School Journal, 122(3), 378–410. https://doi.org/10.1086/718072
 
 - Shin, S., Song, Y., Ha, J., Choi, D. (2017). The Relationship among Stress, Anger, and Problem Drinking in ex-prisoners in Korea. Korean Journal of Probation, 17(2). 197-230. 
 
