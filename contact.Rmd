@@ -10,9 +10,9 @@ output: html_document
 
 <br><br><br><br><br><br>
 
-#### **Dongho Choi**
-##### M.S. Candidate in Statistics | UNL <img src="images/college_logo.png" style="width:35%;" align="right">
-😥😥😥😱😱
-📍 Seoul <br>
-📱 (123) 456 - 7890 <br>
-✉️ [jappleseed@abc.edu](mailto:jappleseed@abc.edu) <br>
+#### **Dongho Choi** <img src="images/college_logo.png" style="width:35%;" align="right">
+##### M.S. Candidate in Statistics | UNL 
+##### M.A. in Educational Psychology | UNL
+📍 4989 N 32nd Street, Lincoln, NE <br>
+📱 (402) 875 - 3918 <br>
+✉️ [tom.choi@huskers.unl.edu](mailto:tom.choi@huskers.unl.edu) <br>
