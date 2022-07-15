@@ -14,7 +14,6 @@ output:
 ---
 
 ![](https://img.shields.io/badge/Using-R-blue)
-![](https://img.shields.io/badge/-SAS-blue)
 
 ![Milk COWculator](./images/dairy/cowculator.jpg)
 
