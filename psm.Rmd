@@ -1,0 +1,197 @@
+---
+title: "Propensity Score Matching"
+subtitle: "Using GBSG2: German Breast Cancer Study Group 2 data"
+author: "Tom Choi"
+date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_depth: 5
+    toc_float: 
+      collapsed: true
+      smooth_scroll: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(dpi = 300)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+# knitr::opts_chunk$set(fig.width=10)
+
+```
+
+```{r packages}
+library(tidyverse)
+library(flextable)
+library(TH.data)
+library(gtsummary)
+library(MatchIt)
+library(cobalt)
+
+
+```
+
+
+## 1. Dataset overview
+
+
+**Description** 
+
+A data frame containing the observations from the GBSG2 study (n=686).
+
+**Variables**
+
+* `horTh`: hormonal therapy, a factor at two levels no and yes.
+* `age`: age of the patients in years.
+* `menostat`: menopausal status, a factor at two levels pre (premenopausal) and post (postmenopausal).
+* `tsize`: tumor size (in mm).
+* `tgrade`: tumor grade, a ordered factor at levels I < II < III.
+* `pnodes`: number of positive nodes.
+* `progrec`: progesterone receptor (in fmol).
+* `estrec`: estrogen receptor (in fmol).
+* `time`: recurrence free survival time (in days).
+* `cens`: censoring indicator (0- censored, 1- event).
+
+**Source**
+
+W. Sauerbrei and P. Royston (1999). Building multivariable prognostic and diagnostic models: transformation of the predictors by using fractional polynomials. Journal of the Royal Statistics Society Series A, Volume 162(1), 71–94.
+
+
+## 2. Summary table
+
+Following is a summary table of the data set. There were significant difference in the `age` (P<0.001), `menostat` (P<0.001), and `estrec` (P=0.009) variables between hormone therapy treatments(no vs. yes).
+
+```{r summary}
+
+GBSG2 %>% tbl_summary(by=horTh) %>% add_overall() %>% add_p() %>% separate_p_footnotes()
+
+```
+
+
+## 3. Matching using nearest neighbor 
+
+
+Following is the result of 1:1 nearest neighbor matching without replacement
+
+```{r matching}
+
+matched <- matchit(formula = horTh ~ age + menostat + tsize + tgrade + pnodes + progrec + estrec, data = GBSG2)
+matched
+summary(matched)
+
+```
+
+
+## 4. Matched data (n=492)
+
+Following is first 6 rows of the matched data.
+
+```{r data}
+
+data <- match.data(matched)
+
+head(data)  %>%
+    flextable() %>%
+    autofit()
+
+```
+
+## 5. Covariates vs. Propensity Score
+
+Following is visual inspection of whether matching is done well using a loess smoother to estimate the mean of each covariate, by treatment status, at each value of the propensity score.
+
+```{r plot1}
+
+plot1 <- data %>%
+    mutate(across(!horTh,as.numeric)) %>%
+    pivot_longer(cols = age:progrec, names_to = "variable", values_to = "response") %>%
+    ggplot(aes(x = distance, y = response, color = as.factor(horTh))) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    labs(x="Propensity score", y="", color = "horTh")+
+    theme_bw() +
+    facet_wrap(vars(variable), scales = "free", ncol = 2)
+
+plot1
+
+```
+
+
+## 6. Change of Absolute Standardised Differences
+
+
+## 7. Distribution of Propensity Score
+
+Following is the visualization of distribution of propensity scores (distance) of those who were matched.
+
+
+```{r plot3}
+
+plot(matched, type = "jitter", col = "blue", interactive = FALSE)
+
+```
+
+
+## 8. Histogram of Propensity Score
+
+Following is the visualization of distribution of propensity scores (distance) before and after matching.
+
+```{r plot4}
+
+plot(matched, type = "hist", interactive = FALSE)
+
+```
+
+
+## 9. Balance Table
+
+```{r table1}
+
+bal.tab(matched, un = TRUE, stats = c("m", "v"))
+
+```
+
+
+## 10. Love plot
+
+### 10-1. Standardized mean differences
+
+```{r loveplot1}
+
+love.plot(matched, stats="mean.diffs", binary="std", 
+          var.order="unadjusted", grid=TRUE, thresholds=0.1,
+          sample.names= c("Unmatched", "Matched"))
+
+```
+
+### 10-2. Variance
+
+```{r loveplot2}
+
+love.plot(matched, stats = "variance.ratios", 
+          var.order = "unadjusted", grid=TRUE, thresholds=2, 
+          sample.names= c("Unmatched", "Matched"))
+
+```
+
+
+## 11. Mirror plot
+
+
+```{r mirror}
+
+bal.plot(matched, var.name = "distance", mirror = TRUE, type = "histogram", which = "both")
+
+```
+
+
+## 12. Before and after propensity score matching
+
+
+## 13. Summary of Propensity Score Matching
+
+We used propensity score matching to estimate the average marginal effect of the horTh on cens on those who received it accounting for confounding by the included covariates. We first attempted 1:1 nearest neighbor propensity score matching without replacement with a propensity score estimated using logistic regression of the treatment on the covariates.1:1 nearest matching on the propensity score without replacement, which yielded adequate balance, as indicated in Table and Figure. After matching, all standardized mean differences for the covariates were below 0.1 and all standardized mean differences for squares and two-way interactions between covariates were below 0.15, indicating adequate balance. The propensity score was estimated using a logistic regression of the horTh on the covariates.
+

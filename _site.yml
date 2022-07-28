@@ -13,6 +13,8 @@ navbar:
       menu: 
       - text: "Predicting House Prices in Iowa"
         href: stat1.html
+      - text: "Propensity Score Matching"
+        href: psm.html
     - text: "DB/SQL"
       menu: 
       - text: "Movie Explorer"
