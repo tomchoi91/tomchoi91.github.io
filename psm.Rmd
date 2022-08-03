@@ -31,8 +31,9 @@ library(gtsummary)
 library(MatchIt)
 library(cobalt)
 library(ggrepel)
-library(moonBook)
-library(officer)
+library(officer) # for fp_border
+# install.packages("twang", version="legacy")
+library(twang)
 
 ```
 
@@ -68,18 +69,8 @@ Following is a summary table of the data set. There were significant difference 
 
 ```{r summary}
 
-aa<-GBSG2[,1:8] %>% tbl_summary(by=horTh) %>% add_overall() %>% add_p() %>% separate_p_footnotes() %>%
-    as_tibble()
-
-dd<-GBSG2
-
-bb <- data[,1:8] %>% tbl_summary(by=horTh) %>% add_overall() %>% add_p() %>% separate_p_footnotes() %>%
-    as_tibble()
-cc <- cbind(aa,bb) %>%
-    flextable()
-flextable(bb) %>% autofit()
-# ?flextable
-
+GBSG2[,1:8] %>% tbl_summary(by=horTh) %>% add_overall() %>% add_p() %>% 
+    separate_p_footnotes()
 
 ```
 
@@ -133,19 +124,22 @@ plot1
 ```
 
 
-## 6. Change of Absolute Standardised Differences
+## 6. Change of Absolute Standardized Differences
 
 
-```{r}
-smryPSM <- function(x, show.table = TRUE, xpos = NULL, ypos = NULL) {
+Following is a visualization of difference in absolute standardized differences of covariates between all data and matched data.
+
+```{r plot2}
+
+ChASD <- function(x, show.table = TRUE, xpos = NULL, ypos = NULL) {
     res = summary(x)$sum.all[, 3]
     if (is.null(summary(x)$sum.matched)) {
         res2 = summary(x)$sum.across[, 3]
     } else {
         res2 = summary(x)$sum.matched[, 3]
     }
-    res
-    res2
+    # res
+    # res2
     df1 = data.frame(value = abs(res))
     df1$name = "All Data"
     df2 = data.frame(value = abs(res2))
@@ -153,10 +147,10 @@ smryPSM <- function(x, show.table = TRUE, xpos = NULL, ypos = NULL) {
     df = rbind(df1, df2)
     rownames(df1)
     df$var = rep(rownames(df1), 2)
-    df
+    # df
     df3 = cbind(abs(res), abs(res2))
     colnames(df3) = c("All Data", "Matched")
-    df3
+    # df3
     df3 = df3[order(df3[, 1], decreasing = TRUE), ]
     if (is.null(ypos)) {
         maxy = max(res)
@@ -167,22 +161,29 @@ smryPSM <- function(x, show.table = TRUE, xpos = NULL, ypos = NULL) {
         xpos = 1.5
     table_grob = gridExtra::tableGrob(round(df3, 3), theme = gridExtra::ttheme_minimal())
     p <- ggplot(data = df, aes_string(x = "name", y = "value", color = "var", group = "var",
-        label = "var")) + geom_point() + geom_line() + xlab("") + ylab("Absolute Standardized Diff in Means") +
-        guides(colour = FALSE) + ggrepel::geom_text_repel(data = df[df$name == "All Data",
-        ], hjust = 1.2) + ggrepel::geom_text_repel(data = df[df$name != "All Data",
-        ], hjust = -0.2) + theme_bw()
+        label = "var")) + 
+        geom_point() + geom_line() + 
+        xlab("") + ylab("Absolute Standardized Diff in Means") +
+        guides(colour = "none") + 
+        ggrepel::geom_text_repel(data = df[df$name == "All Data",], hjust = 1.2) + 
+        ggrepel::geom_text_repel(data = df[df$name != "All Data",], hjust = -0.2) + 
+        theme_bw()
     if (show.table)
         p <- p + annotation_custom(grob = table_grob, xmin = xpos, ymin = ypos)
     p
 }
 
-smryPSM(matched)
+# methods(class="matchit")
+# ?plot.summary.matchit
+# ?summary.matchit
+ChASD(matched)
+
 ```
 
 
 ## 7. Distribution of Propensity Score
 
-Following is the visualization of distribution of propensity scores (distance) of those who were matched.
+Following is a visualization of distribution of propensity scores (distance) of those who were matched.
 
 
 ```{r plot3}
@@ -194,7 +195,7 @@ plot(matched, type = "jitter", col = "blue", interactive = FALSE)
 
 ## 8. Histogram of Propensity Score
 
-Following is the visualization of distribution of propensity scores (distance) before and after matching.
+Following is a visualization of distribution of propensity scores (distance) before and after matching.
 
 ```{r plot4}
 
@@ -205,6 +206,8 @@ plot(matched, type = "hist", interactive = FALSE)
 
 ## 9. Balance Table
 
+Following is a table of balance statistics computed before matching and those computed after matching.
+
 ```{r table1}
 
 bal.tab(matched, un = TRUE, stats = c("m", "v"))
@@ -213,6 +216,8 @@ bal.tab(matched, un = TRUE, stats = c("m", "v"))
 
 
 ## 10. Love plot
+
+Following are love plots of chosen balance statistics (standardized mean differences and variance ratios)
 
 ### 10-1. Standardized mean differences
 
@@ -224,18 +229,20 @@ love.plot(matched, stats="mean.diffs", binary="std",
 
 ```
 
-### 10-2. Variance
+### 10-2. Variance ratios
 
 ```{r loveplot2}
 
 love.plot(matched, stats = "variance.ratios", 
-          var.order = "unadjusted", grid=TRUE, thresholds=2, 
+          var.order = "unadjusted", grid=TRUE, thresholds=1, 
           sample.names= c("Unmatched", "Matched"))
 
 ```
 
 
 ## 11. Mirror plot
+
+Following is a visualization of distributional balance for distance.
 
 
 ```{r mirror}
@@ -248,155 +255,63 @@ bal.plot(matched, var.name = "distance", mirror = TRUE, type = "histogram", whic
 ## 12. Before and after propensity score matching
 
 
-```{r}
+Following is a summary table of the data before matching and after matching.
 
-formula_to_vars <- function(formula, allowInteraction = FALSE) {
-    temp = deparse(formula)
-    temp = gsub(" ", "", temp)
-    temp = unlist(strsplit(temp, "~"))
-    yvar = temp[1]
-    yvar
-    if (allowInteraction) {
-        xvars = unlist(strsplit(temp[2], "+", fixed = TRUE))
-    } else {
-        xvars = unique(unlist(strsplit(temp[2], "[+]|[*]|:")))
-    }
-    xvars
-    list(yvar = yvar, xvars = xvars)
-}
+```{r before-after}
 
-func_pform <- function(x, digits = 3) {
-    for (i in seq_along(x)) {
-        if (is.na(as.numeric(x[i]))) {
-            next
-        } else if (as.numeric(x[i]) < 10^(-digits)) {
-            x[i] = paste0("< 0.", paste0(rep("0", digits - 1), collapse = ""), "1")
-        }
-    }
-    x
-}
+aa <- GBSG2[,1:8] %>% tbl_summary(by=horTh) %>% add_overall() %>% add_p() %>%
+    as_tibble()
 
-smry_tbl_bf_aft <- function(x, digitsstd = 3, grouplabel = NULL) {
-    temp1 = formula_to_vars(x$formula)
-    xvars = temp1$xvars
-    yvar = temp1$yvar
-    data1 = x$model$data
-    if (is.null(data1)) {
-        result = call2param(x$call)
-        data1 = eval(parse(text = result$data))
-    }
-    data2 = match.data(x)[1:ncol(data1)]
-    data2
-    data1$matchGroup = "Before"
-    data2$matchGroup = "After"
-    data3 = rbind(data1, data2)
-    temp = paste0("mytable(matchGroup+", yvar, "~", paste0(xvars, collapse = "+"),
-        ",data=data3)")
-    restable = eval(parse(text = temp))
-    restable
-    restable = compress(restable)
-    res = list()
-    form1 = paste0("%.", digitsstd, "f")
-    res[[1]] = sprintf(form1, summary(x)$sum.all[, 3])
-    if (is.null(summary(x)$sum.matched)) {
-        res[[2]] = sprintf(form1, summary(x)$sum.across[, 3])
-    } else {
-        res[[2]] = sprintf(form1, summary(x)$sum.matched[, 3])
-    }
-    if (rownames(summary(x)$sum.all)[1] == "distance") {
-        res[[1]] = res[[1]][-1]
-        res[[2]] = res[[2]][-1]
-    }
-    start = 1
-    restable[[1]]$res
-    end = ncol(restable[[1]]$res) - 7
-    end
-    px = restable[[1]]$res$ptest
-    df = list()
-    for (k in 1:2) {
-        df[[k]] = restable[[k]]$res[1:end]
-        temp = c()
-        j = 1
-        for (i in 1:length(px)) {
-            if (i == length(px)) {
-                temp = c(temp, res[[k]][j])
-                j = j + 1
-            } else if ((px[i] != "") & (px[i + 1] == "")) {
-                temp = c(temp, "")
-            } else {
-                temp = c(temp, res[[k]][j])
-                j = j + 1
-            }
-        }
-        df[[k]]$std = temp
-    }
-    df = cbind(df[[1]], df[[2]])
-    df[[6]] <- ""
-    df[[4]] <- func_pform(df[[4]])
-    df[[9]] <- func_pform(df[[9]])
-    df
-    weighted = FALSE
-    if (length(unique(match.data(x)$weights)) > 1) {
-        result = getWeightedValues(x)
-        df[[7]] = result$control
-        df[[8]] = result$treat
-        df[[9]] = result$p
-        weighted = TRUE
-    }
-    subnames = colnames(df)
-    colnames(df) = 1:10
-    header1 = c("Covariates", paste0("N=", restable[[1]]$count), "", "", "", paste0("N=",
-        restable[[2]]$count), "", "")
-    if (is.null(grouplabel)) {
-        name2 = paste0(subnames[1], "=", subnames[2:3])
-    } else {
-        name2 = grouplabel
-    }
-    header2 = c("", name2, "p", "standardized\ndifference", "", name2, "p", "standardized\ndifference")
-    header3 = c("Variables", "Before Propensity Score Matching", "", "After Propensity Score Matching")
-    big_border = fp_border(color = "black", width = 2)
-    small_border = fp_border(color = "gray50", width = 1)
-    ft <- flextable(df)
-    ft
-    ft <- ft %>%
-        delete_part("header") %>%
-        add_header_row(values = header1) %>%
-        add_header_row(values = header2) %>%
-        add_header_row(values = header3, colwidths = c(1, 4, 1, 4)) %>%
-        hline_top(part = "header", border = big_border) %>%
-        hline(i = 2, j = 2:3, border = small_border, part = "header") %>%
-        hline(i = 2, j = 7:8, border = small_border, part = "header") %>%
-        hline(i = 1, j = 2:5, border = small_border, part = "header") %>%
-        hline(i = 1, j = 7:10, border = small_border, part = "header") %>%
-        align(align = "center", part = "header") %>%
-        align(align = "right", part = "body") %>%
-        align(j = 1, align = "left", part = "body") %>%
-        merge_at(i = 1:2, j = 1, part = "header") %>%
-        merge_at(i = 2:3, j = 4, part = "header") %>%
-        merge_at(i = 2:3, j = 5, part = "header") %>%
-        merge_at(i = 2:3, j = 9, part = "header") %>%
-        merge_at(i = 2:3, j = 10, part = "header") %>%
-        hline_bottom(part = "header", border = big_border) %>%
-        hline_top(part = "body", border = big_border) %>%
-        hline(i = 2, j = 4:5, part = "header", border = big_border) %>%
-        hline(i = 2, j = 9:10, part = "header", border = big_border) %>%
-        autofit() %>%
-        width(j = 6, width = 0.05) %>%
-        width(j = 1, width = 0.5) %>%
-        width(j = 2:5, width = 1.2) %>%
-        width(j = 7:10, width = 1.2)
-    if (weighted)
-        ft <- footnote(ft, i = 2, j = 7:8, ref_symbols = c("a"), value = as_paragraph("Values are weighted mean $)C\016!>\017 weighted sd or weighted percentages"),
-            part = "header", inline = T)
-    ft
-}
+names(aa) <- c("Variable", paste0(names(aa[-1]),"_Before Mathcing")) %>%
+    str_remove_all("\\*\\*")
 
-smry_tbl_bf_aft(matched)
+
+bb <- data[,1:8] %>% tbl_summary(by=horTh) %>% add_overall() %>% add_p() %>%
+    as_tibble()
+
+names(bb) <- c("Variable", paste0(names(bb[-1]),"_After Matching")) %>%
+    str_remove_all("\\*\\*")
+
+cc <- aa %>%
+    left_join(bb, by="Variable") 
+
+
+headers <-  list(tibble(col_keys = colnames(cc)) %>%
+    separate(
+      col = col_keys,
+      into = c("line1", "line2"),
+      sep = "_",
+      remove = FALSE,
+      fill = "right"
+    ) %>%
+    relocate(line2, .before = line1)
+  )
+
+big_border = fp_border(color="black", width = 2)
+
+vv<- cc %>%
+    flextable(col_keys = names(.))   %>%
+    set_header_df(mapping = headers, key = "col_keys") %>% 
+    merge_h(part = "header") %>%
+    theme_vanilla() %>%
+    # theme_booktabs(bold_header = TRUE) %>%
+    # vline(j=c(1,5), border = big_border) %>%
+    # valign(j = c("Variable"), valign = "center") %>%
+    align(align = "center", part = "header") %>%
+    align(j = c(2:9), align = "right", part = "body") %>%
+    fontsize(size = 8, part = "body") %>%
+    add_footer_row(values = "Median (IQR); n (%)", colwidths = 9) %>%
+    vline(j=c(1,5), border = NULL, part = "all") %>%
+    hline_bottom(border = big_border, part = "footer") %>%
+    fix_border_issues() %>%
+    autofit()
+
+vv
 
 ```
 
 
 ## 13. Summary of Propensity Score Matching
 
-We used propensity score matching to estimate the average marginal effect of the horTh on cens on those who received it accounting for confounding by the included covariates. We first attempted 1:1 nearest neighbor propensity score matching without replacement with a propensity score estimated using logistic regression of the treatment on the covariates.1:1 nearest matching on the propensity score without replacement, which yielded adequate balance, as indicated in Table and Figure. After matching, all standardized mean differences for the covariates were below 0.1 and all standardized mean differences for squares and two-way interactions between covariates were below 0.15, indicating adequate balance. The propensity score was estimated using a logistic regression of the horTh on the covariates.
+We used propensity score matching to estimate the average marginal effect of the horTh on cens on those who received it accounting for confounding by the included covariates. We first attempted 1:1 nearest neighbor propensity score matching without replacement with a propensity score estimated using logistic regression of the treatment on the covariates. 1:1 nearest matching on the propensity score without replacement, which yielded adequate balance, as indicated in tables and figures. After matching, all standardized mean differences for the covariates were below 0.1 and all standardized mean differences for squares and two-way interactions between covariates were below 0.15, indicating adequate balance. The propensity score was estimated using a logistic regression of the horTh on the covariates.
 
