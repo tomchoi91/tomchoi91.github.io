@@ -213,7 +213,7 @@ bal.tab(matched, un = TRUE, stats = c("m", "v"))
 ```
 
 
-## 10. Love plot
+## 10. Love Plot
 
 Following are love plots of chosen balance statistics (standardized mean differences and variance ratios)
 
@@ -227,6 +227,7 @@ love.plot(matched, stats="mean.diffs", binary="std",
 
 ```
 
+
 ### 10-2. Variance ratios
 
 ```{r loveplot2}
@@ -238,7 +239,7 @@ love.plot(matched, stats = "variance.ratios",
 ```
 
 
-## 11. Mirror plot
+## 11. Mirror Plot
 
 Following is a visualization of distributional balance for distance.
 
