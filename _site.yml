@@ -7,22 +7,22 @@ output_dir: "."
 navbar:
   title: "Dongho Choi"
   left:
-    - text: "Research"
+    - text: "Research/Teaching"
       href: research.html
     - text: "Stat/ML"
       menu: 
-      - text: "Predicting House Prices in Iowa"
-        href: stat1.html
+      # - text: "Predicting House Prices in Iowa"
+      #   href: stat1.html
       - text: "Propensity Score Matching"
         href: psm.html
-    - text: "DB/SQL"
-      menu: 
-      - text: "Movie Explorer"
-        href: dbsql1.html
+    # - text: "DB/SQL"
+    #   menu: 
+    #   - text: "Movie Explorer"
+    #     href: dbsql1.html
     - text: "Visualization"
       menu: 
-      - text: "Squid Game Elimination Analysis"
-        href: visualization1.html
+      # - text: "Squid Game Elimination Analysis"
+      #   href: visualization1.html
       - text: "Milk Production Data Exploration"
         href: visualization2.html
   right:

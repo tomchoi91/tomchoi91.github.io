@@ -1,5 +1,5 @@
 ---
-pagetitle: "Research"
+pagetitle: "Research/Teaching"
 output:
   html_document:
     toc: true
@@ -20,41 +20,78 @@ output:
 
 ### Journal Articles
 
-- Iruka, Sheridan, S., Koziol, N., Schumacher, R., Kerby, H., Prokasky, A., & Choi, D. (2022). Examining Malleable Factors That Explain the End-of-Kindergarten Racial/Ethnic Gaps. The Elementary School Journal, 122(3), 378–410. https://doi.org/10.1086/718072
+- Iruka, I., Sheridan, S., Koziol, N., Schumacher, R., Kerby, H., Prokasky, A., & **Choi, D.** (2022). Examining Malleable Factors That Explain the End-of-Kindergarten Racial/Ethnic Gaps. *The Elementary School Journal*, 122(3), 378–410. https://doi.org/10.1086/718072
 
-- Shin, S., Song, Y., Ha, J., Choi, D. (2017). The Relationship among Stress, Anger, and Problem Drinking in ex-prisoners in Korea. Korean Journal of Probation, 17(2). 197-230. 
+- Shin, S., Song, Y., Ha, J., **Choi, D.** (2017). The Relationship among Stress, Anger, and Problem Drinking in ex-prisoners in Korea. *Korean Journal of Probation*, 17(2). 197-230. 
 
-- Ha, J., Song, Y., Choi, D. (2017). Survey on Drinking Status of Ex-prisoners in Korea - Focused on Problem Drinking and Psychosocial Factors. Korean Offender Rehabilitation Studies, 3(1), 131-166. 
+- Ha, J., Song, Y., **Choi, D.** (2017). Survey on Drinking Status of Ex-prisoners in Korea - Focused on Problem Drinking and Psychosocial Factors. *Korean Offender Rehabilitation Studies*, 3(1), 131-166. 
 
 ### Technical Reports
 
-- Reichenberg, R. E., Choi, D., & Nord, J., (2021). 4-H National Call for Data: College & Career Readiness. Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
+- Reichenberg, R. E., **Choi, D.**, & Nord, J., (2021). *4-H National Call for Data: College & Career Readiness*. Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
 
-- Koziol, N., Choi, D., Nord, J., Howell Smith, M. C., & Stevens, J. (2019). 4-H Common Measures 2.0 (CM 2.0): National Call for Data. Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
+- Koziol, N., **Choi, D.**, Nord, J., Howell Smith, M. C., & Stevens, J. (2019). *4-H Common Measures 2.0 (CM 2.0): National Call for Data*. Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
 
 
 ### Manuscripts under review
 
-- Babik, I., Cunha, A. B., Choi, D., Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) The Effect of START-Play Intervention on Reaching-Related Exploratory Behaviors in Children with Neuromotor Delays: Randomized Controlled Trial. Submitted to Physical and Occupational Therapy in Pediatrics.
+- Babik, I., Cunha, A. B., **Choi, D.**, Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) The Effect of START-Play Intervention on Reaching-Related Exploratory Behaviors in Children with Neuromotor Delays: Randomized Controlled Trial. Submitted to *Physical and Occupational Therapy in Pediatrics*.
 
-- Cunha, A. B., Babik, I., Choi, D., Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) The Impact of Severity of Motor Delay, Timing of Task Mastery, and START-Play Intervention on the Development of Means-End Problem Solving in Young Children. Submitted to Research in Developmental Disabilities.
+- Cunha, A. B., Babik, I., **Choi, D.**, Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) The Impact of Severity of Motor Delay, Timing of Task Mastery, and START-Play Intervention on the Development of Means-End Problem Solving in Young Children. Submitted to *Research in Developmental Disabilities*.
 
-- Babik, I., Cunha, A. B., Choi, D., Koziol, N., Hsu, L. Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) Affordances in the Home Environment Moderate the Effects of the START-Play Intervention and Motor Delay Severity on Children’s Motor, Language, and Cognitive Development. Submitted to Developmental Psychology.
+- Babik, I., Cunha, A. B., **Choi, D.**, Koziol, N., Hsu, L. Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) Affordances in the Home Environment Moderate the Effects of the START-Play Intervention and Motor Delay Severity on Children’s Motor, Language, and Cognitive Development. Submitted to *Developmental Psychology*.
 
 
 ## PRESENTATIONS
 
-- Jancart, K. L., Cunha, A. B., Babik, I., Choi, D., Koziol, N., Harbourne, R., Lobo, M., McCoy, S., Willett, S., Bovaird, J., Dusing, S. (2022, September).  Early versus late reaching mastery’s effect on object permanence in infants with motor delays receiving START-Play and usual care-early intervention. Paper will be presented at the 75th Annual Meeting of American Academy for Cerebral Palsy and Developmental Medicine, Las Vegas, Nevada, United States.
+- Jancart, K. L., Cunha, A. B., Babik, I., **Choi, D.**, Koziol, N., Harbourne, R., Lobo, M., McCoy, S., Willett, S., Bovaird, J., Dusing, S. (2022, September).  *Early versus late reaching mastery’s effect on object permanence in infants with motor delays receiving START-Play and usual care-early intervention.* Paper will be presented at the 75th Annual Meeting of American Academy for Cerebral Palsy and Developmental Medicine (AACPDM), Las Vegas, Nevada, United States.
 
-- Nugent, G., Chen, K. Soh, L. Choi, D., Trainin, G., Smith, W. (2022, July). Developing K-8 Computer Science Teachers’ Content Knowledge, Self-efficacy, and Attitudes through Evidence-based Professional Development. Paper presented at the 2022 ACM Conference on Innovation and Technology in Computer Science Education, Dublin., Ireland.
+- Koziol, N., **Choi, D.**, Harbourne, R., Lobo, M. A., Dusing, S., Willett, S., Bovaird, J., Hsu, L. (2022. August).  *Evaluation of Nonequivalent Groups Equating Methods for Use in Intervention Research.* Poster presented at the 2022 American Psychological Association (APA) Annual Convention, Minneapolis, Minnesota, United States.
 
-- Babik, I., Cunha, A. B., Choi, D., Koziol, N., Hsu, L., Dusing, S., Harbourne, R., McCoy, S., Bovaird, J., Willett, S., Lobo, M. (2022, July). The role of affordances in the home environment in children's motor, cognitive, and language development. Poster presented at the XXIII International Congress of Infant Studies (ICIS) 2022: Developmental Cascades, Westin, Ottawa, United States.
+- Nugent, G., Chen, K. Soh, L. **Choi, D.**, Trainin, G., Smith, W. (2022, July). D*eveloping K-8 Computer Science Teachers’ Content Knowledge, Self-efficacy, and Attitudes through Evidence-based Professional Development.* Paper presented at the 2022 Association for Computing Machinery (ACM) Conference on Innovation and Technology in Computer Science Education, Dublin., Ireland.
 
-- Choi, D. & Koziol, N. (2022, April). Testing Longitudinal Invariance of Parent Involvement in School using ECLS-K:2011. Poster presented at the 2022 CYFS Summit on Research in Early Childhood, Lincoln., Nebraska, United States.
+- Babik, I., Cunha, A. B., **Choi, D.**, Koziol, N., Hsu, L., Dusing, S., Harbourne, R., McCoy, S., Bovaird, J., Willett, S., Lobo, M. (2022, July). *The role of affordances in the home environment in children's motor, cognitive, and language development.* Poster presented at the XXIII International Congress of Infant Studies (ICIS) 2022: Developmental Cascades, Westin, Ottawa, United States.
 
-- Cunha, A. B., Babik, I., Choi, D., Koziol, N., Harbourne, R., McCoy, S., Bovaird, J., & Lobo, M. (2021, April). Performance after mastery of means-end problem solving differs in children with mild versus significant motor delays. Poster presented at the Society for Research in Child Development Biennial Meeting, Virtual.
+- **Choi, D.** & Koziol, N. (2022, April). *Testing Longitudinal Invariance of Parent Involvement in School using ECLS-K:2011.* Poster presented at the 2022 CYFS Summit on Research in Early Childhood, Lincoln, Nebraska, United States.
 
-- Babik, I., Cunha, A. B., Choi, D., Koziol, N., Harbourne, R., Dusing, S. C., McCoy, S. W., Bovaird, J., & Lobo, M. A. (2021, February). START-Play intervention advanced reaching outcomes in children with significant but not mild motor delay. Paper presented to the Combined Sections Meeting of the American Physical Therapy Association, Virtual.
+- Cunha, A. B., Babik, I., **Choi, D.**, Koziol, N., Harbourne, R., McCoy, S., Bovaird, J., & Lobo, M. (2021, April). *Performance after mastery of means-end problem solving differs in children with mild versus significant motor delays.* Poster presented at the Society for Research in Child Development (SCRD) Biennial Meeting, Virtual.
+
+- Babik, I., Cunha, A. B., **Choi, D.**, Koziol, N., Harbourne, R., Dusing, S. C., McCoy, S. W., Bovaird, J., & Lobo, M. A. (2021, February). *START-Play intervention advanced reaching outcomes in children with significant but not mild motor delay.* Paper presented to the Combined Sections Meeting of the American Physical Therapy Association (APTA), Virtual.
+
+- Shin, S., Song, Y., **Choi, D.**, Lee, M. (2017, August). *Relation Between Drinking and Psychological Variables of Korean Rehabilitation Protection Recipients.* Poster presented at 2017 American Psychological Association (APA) Annual Convention, Washington, D.C., United States.
+
+- Lee, Y., Choi. D., Koo., K, **Choi, J.** (2017, August). *Discrepancy between Reality and Expectation: Pathway to Smartphone Dependency among Adolescents in Korea.* Poster presented at 2017 American Psychological Association (APA) Annual Convention, Washington, D.C., United States.
+(Awarded Second placing at Student-First-Authored Paper Contest)
+
+- Shin, S., Park Y., Choi. Y., Jung. J., **Choi, D.** (2016, August). *The Mediating Effect of Attention on the Relationship between Smartphone Dependency and Aggression.* Poster presented at 2016 Korean Psychological Association (KPA) Annual Conference , Gunsan-si, Jeollabuk-do, South Korea.
+
+- Cho, Y., **Choi, D.**, Kim, D., Kim, J., Lee, Y. (2016, August). *The Relationship Between Attachment Anxiety and College Adaptation: The Mediating Effect of Smartphone Addiction and Existential Spiritual Well-being.* Poster presented at 2016 Korean Clinical Psychological Association (KCPA) Spring Conference, Chuncheon-si, Gangwon-do, South Korea.
+
+
+
+## TEACHING
+
+- *Jan. 2022 ~ May. 2022* - **Graduate Teaching Assistant** 
+<br>
+-- *Statistical Methods*, an Educational Psychology major course from Department of Educational Psychology, University Nebraska–Lincoln
+<br>
+-- Gave a lecture on correlation analysis
+
+- *Mar. 2017 ~ Jun. 2017* - **Undergraduate Teaching Assistant**
+<br>
+-- *Abnormal Psychology*, a Counseling Psychology major course from Department of Counseling Psychology, Handong Global University
+<br>
+-- Assisted the lecturer with arranging lecture room set up, marking exam papers, and checking attendance
+<br>
+-- Organized and supervised a field trip to the mental health agencies in local areas (e.g. counseling centers for internet addiction and gambling addiction, and rehabilitation centers for people with mental illness in Pohang-si and Daegu-si, etc. Each student had to choose one)
+
+
+- *Mar. 2016 ~ Jun. 2016* - **Undergraduate Teaching Assistant**
+<br>
+-- *The Handong Character Build-up*, a freshman mandatory course from Global Leadership School, Handong Global University
+<br>
+-- Assisted the lecturer with arranging lecture room set up, marking exam papers, and checking attendance
+
 
 
 
