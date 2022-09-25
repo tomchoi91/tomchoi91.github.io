@@ -9,9 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Tom Choi" />
 
 
-<title>Research/Teaching</title>
+<title>SQL + R</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -33,8 +34,11 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -221,6 +225,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -283,12 +290,6 @@ div.tocify {
   border-radius: 0px;
 }
 
-.tocify-subheader {
-  display: inline;
-}
-.tocify-subheader .tocify-item {
-  font-size: 0.95em;
-}
 
 </style>
 
@@ -380,167 +381,71 @@ div.tocify {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
 
+<h1 class="title toc-ignore">SQL + R</h1>
+<h3 class="subtitle">Connecting SQL in RStudio/RMarkdown</h3>
+<h4 class="author">Tom Choi</h4>
+
 </div>
 
 
-<!-- navbar added -->
-<p><link rel="stylesheet" href="styles.css" type="text/css">
-<link rel="stylesheet" href="site_libs/academicons-1.9.1/css/academicons.min.css"/></p>
-<p><br></p>
-<div id="publications" class="section level2">
-<h2>PUBLICATIONS</h2>
-<div id="journal-articles" class="section level3">
-<h3>Journal Articles</h3>
+<p><img src="https://img.shields.io/badge/using-sas-orange" /> <img
+src="https://img.shields.io/badge/Using-R-blue" /></p>
+<pre class="r"><code>library(RPostgreSQL)
+library(RPostgres)
+library(flextable)
+library(dplyr)
+library(ggplot2)
+library(tidyr)</code></pre>
+<div id="database-overview" class="section level2">
+<h2>Database overview</h2>
+<p><strong>Description</strong></p>
+<p>The Sakila Database holds information about a company that rents
+movie DVDs. For this project, we will be querying the database to gain
+an understanding of the customer base, such as what the patterns in
+movie watching are across different customer groups, how they compare on
+payment earnings, and how the stores compare in their performance.</p>
+<p>And here is the Entity-relationship (ER) diagram for the DVD Rental
+database is provided below.</p>
+<p><img src="images/erd.png" /></p>
+<p><strong>Tables</strong></p>
 <ul>
-<li><p>Iruka, I., Sheridan, S., Koziol, N., Schumacher, R., Kerby, H.,
-Prokasky, A., &amp; <strong>Choi, D.</strong> (2022). Examining
-Malleable Factors That Explain the End-of-Kindergarten Racial/Ethnic
-Gaps. <em>The Elementary School Journal</em>, 122(3), 378–410. <a
-href="https://doi.org/10.1086/718072"
-class="uri">https://doi.org/10.1086/718072</a></p></li>
-<li><p>Shin, S., Song, Y., Ha, J., <strong>Choi, D.</strong> (2017). The
-Relationship among Stress, Anger, and Problem Drinking in ex-prisoners
-in Korea. <em>Korean Journal of Probation</em>, 17(2). 197-230.</p></li>
-<li><p>Ha, J., Song, Y., <strong>Choi, D.</strong> (2017). Survey on
-Drinking Status of Ex-prisoners in Korea - Focused on Problem Drinking
-and Psychosocial Factors. <em>Korean Offender Rehabilitation
-Studies</em>, 3(1), 131-166.</p></li>
+<li><code>actor</code> : contains actors data including first name and
+last name</li>
+<li><code>film</code> : contains films data such as title, release year,
+length, rating, etc</li>
+<li><code>film_actor</code> : contains the relationships between films
+and actors</li>
+<li><code>category</code> : contains film’s categories data</li>
+<li><code>film_category</code> : containing the relationships between
+films and categories</li>
+<li><code>store</code> : contains the store data including manager staff
+and address</li>
+<li><code>inventory</code> : stores inventory data</li>
+<li><code>rental</code> : stores rental data</li>
+<li><code>payment</code> : stores customer’s payments</li>
+<li><code>staff</code> : stores staff data</li>
+<li><code>customer</code> : stores customer’s data</li>
+<li><code>address</code> : stores address data for staff and
+customers</li>
+<li><code>city</code> : stores the city names</li>
+<li><code>country</code> : stores the country names</li>
 </ul>
+<p><strong>Source</strong></p>
+<p><a href="https://dev.mysql.com/doc/sakila/en/">Sakila Sample
+Database</a></p>
 </div>
-<div id="technical-reports" class="section level3">
-<h3>Technical Reports</h3>
-<ul>
-<li><p>Reichenberg, R. E., <strong>Choi, D.</strong>, &amp; Nord, J.,
-(2021). <em>4-H National Call for Data: College &amp; Career
-Readiness</em>. Lincoln, NE: Nebraska Academy for Methodology, Analytics
-&amp; Psychometrics.</p></li>
-<li><p>Koziol, N., <strong>Choi, D.</strong>, Nord, J., Howell Smith, M.
-C., &amp; Stevens, J. (2019). <em>4-H Common Measures 2.0 (CM 2.0):
-National Call for Data</em>. Lincoln, NE: Nebraska Academy for
-Methodology, Analytics &amp; Psychometrics.</p></li>
-</ul>
-</div>
-<div id="manuscripts-under-review" class="section level3">
-<h3>Manuscripts Under Review</h3>
-<ul>
-<li><p>Babik, I., Cunha, A. B., <strong>Choi, D.</strong>, Koziol, N.,
-Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S.,
-&amp; Lobo, M. A. (under review) The Effect of START-Play Intervention
-on Reaching-Related Exploratory Behaviors in Children with Neuromotor
-Delays: Randomized Controlled Trial. Submitted to <em>Physical and
-Occupational Therapy in Pediatrics</em>.</p></li>
-<li><p>Cunha, A. B., Babik, I., <strong>Choi, D.</strong>, Koziol, N.,
-Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S.,
-&amp; Lobo, M. A. (under review) The Impact of Severity of Motor Delay,
-Timing of Task Mastery, and START-Play Intervention on the Development
-of Means-End Problem Solving in Young Children. Submitted to
-<em>Research in Developmental Disabilities</em>.</p></li>
-<li><p>Babik, I., Cunha, A. B., <strong>Choi, D.</strong>, Koziol, N.,
-Hsu, L. Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J.,
-Willett, S., &amp; Lobo, M. A. (under review) Affordances in the Home
-Environment Moderate the Effects of the START-Play Intervention and
-Motor Delay Severity on Children’s Motor, Language, and Cognitive
-Development. Submitted to <em>Research in Developmental
-Disabilities</em>.</p></li>
-</ul>
-</div>
-</div>
-<div id="presentations" class="section level2">
-<h2>PRESENTATIONS</h2>
-<ul>
-<li><p>Jancart, K. L., Cunha, A. B., Babik, I., <strong>Choi,
-D.</strong>, Koziol, N., Harbourne, R., Lobo, M., McCoy, S., Willett,
-S., Bovaird, J., Dusing, S. (2022, September). <em>Early versus late
-reaching mastery’s effect on object permanence in infants with motor
-delays receiving START-Play and usual care-early intervention.</em>
-Paper will be presented at the 75th Annual Meeting of American Academy
-for Cerebral Palsy and Developmental Medicine (AACPDM), Las Vegas,
-Nevada, United States.</p></li>
-<li><p>Koziol, N., <strong>Choi, D.</strong>, Harbourne, R., Lobo, M.
-A., Dusing, S., Willett, S., Bovaird, J., Hsu, L. (2022. August).
-<em>Evaluation of Nonequivalent Groups Equating Methods for Use in
-Intervention Research.</em> Poster presented at the 2022 American
-Psychological Association (APA) Annual Convention, Minneapolis,
-Minnesota, United States.</p></li>
-<li><p>Nugent, G., Chen, K. Soh, L. <strong>Choi, D.</strong>, Trainin,
-G., Smith, W. (2022, July). D<em>eveloping K-8 Computer Science
-Teachers’ Content Knowledge, Self-efficacy, and Attitudes through
-Evidence-based Professional Development.</em> Paper presented at the
-2022 Association for Computing Machinery (ACM) Conference on Innovation
-and Technology in Computer Science Education, Dublin., Ireland.</p></li>
-<li><p>Babik, I., Cunha, A. B., <strong>Choi, D.</strong>, Koziol, N.,
-Hsu, L., Dusing, S., Harbourne, R., McCoy, S., Bovaird, J., Willett, S.,
-Lobo, M. (2022, July). <em>The role of affordances in the home
-environment in children’s motor, cognitive, and language
-development.</em> Poster presented at the XXIII International Congress
-of Infant Studies (ICIS) 2022: Developmental Cascades, Westin, Ottawa,
-United States.</p></li>
-<li><p><strong>Choi, D.</strong> &amp; Koziol, N. (2022, April).
-<em>Testing Longitudinal Invariance of Parent Involvement in School
-using ECLS-K:2011.</em> Poster presented at the 2022 CYFS Summit on
-Research in Early Childhood, Lincoln, Nebraska, United States.</p></li>
-<li><p>Cunha, A. B., Babik, I., <strong>Choi, D.</strong>, Koziol, N.,
-Harbourne, R., McCoy, S., Bovaird, J., &amp; Lobo, M. (2021, April).
-<em>Performance after mastery of means-end problem solving differs in
-children with mild versus significant motor delays.</em> Poster
-presented at the Society for Research in Child Development (SCRD)
-Biennial Meeting, Virtual.</p></li>
-<li><p>Babik, I., Cunha, A. B., <strong>Choi, D.</strong>, Koziol, N.,
-Harbourne, R., Dusing, S. C., McCoy, S. W., Bovaird, J., &amp; Lobo, M.
-A. (2021, February). <em>START-Play intervention advanced reaching
-outcomes in children with significant but not mild motor delay.</em>
-Paper presented to the Combined Sections Meeting of the American
-Physical Therapy Association (APTA), Virtual.</p></li>
-<li><p>Shin, S., Song, Y., <strong>Choi, D.</strong>, Lee, M. (2017,
-August). <em>Relation Between Drinking and Psychological Variables of
-Korean Rehabilitation Protection Recipients.</em> Poster presented at
-2017 American Psychological Association (APA) Annual Convention,
-Washington, D.C., United States.</p></li>
-<li><p>Lee, Y., Choi. D., Koo., K, <strong>Choi, J.</strong> (2017,
-August). <em>Discrepancy between Reality and Expectation: Pathway to
-Smartphone Dependency among Adolescents in Korea.</em> Poster presented
-at 2017 American Psychological Association (APA) Annual Convention,
-Washington, D.C., United States. (Awarded Second placing at
-Student-First-Authored Paper Contest)</p></li>
-<li><p>Shin, S., Park Y., Choi. Y., Jung. J., <strong>Choi, D.</strong>
-(2016, August). <em>The Mediating Effect of Attention on the
-Relationship between Smartphone Dependency and Aggression.</em> Poster
-presented at 2016 Korean Psychological Association (KPA) Annual
-Conference , Gunsan-si, Jeollabuk-do, South Korea.</p></li>
-<li><p>Cho, Y., <strong>Choi, D.</strong>, Kim, D., Kim, J., Lee, Y.
-(2016, August). <em>The Relationship Between Attachment Anxiety and
-College Adaptation: The Mediating Effect of Smartphone Addiction and
-Existential Spiritual Well-being.</em> Poster presented at 2016 Korean
-Clinical Psychological Association (KCPA) Spring Conference,
-Chuncheon-si, Gangwon-do, South Korea.</p></li>
-</ul>
-</div>
-<div id="teaching" class="section level2">
-<h2>TEACHING</h2>
-<ul>
-<li><p><em>Jan. 2022 ~ May. 2022</em> - <strong>Graduate Teaching
-Assistant</strong> <br> – <em>Statistical Methods</em>, an Educational
-Psychology major course from Department of Educational Psychology,
-University Nebraska–Lincoln <br> – Gave a lecture on correlation
-analysis</p></li>
-<li><p><em>Mar. 2017 ~ Jun. 2017</em> - <strong>Undergraduate Teaching
-Assistant</strong> <br> – <em>Abnormal Psychology</em>, a Counseling
-Psychology major course from Department of Counseling Psychology,
-Handong Global University <br> – Assisted the lecturer with arranging
-lecture room set up, marking exam papers, and checking attendance <br> –
-Organized and supervised a field trip to the mental health agencies in
-local areas (e.g. counseling centers for internet addiction and gambling
-addiction, and rehabilitation centers for people with mental illness in
-Pohang-si and Daegu-si, etc. Each student had to choose one)</p></li>
-<li><p><em>Mar. 2016 ~ Jun. 2016</em> - <strong>Undergraduate Teaching
-Assistant</strong> <br> – <em>The Handong Character Build-up</em>, a
-freshman mandatory course from Global Leadership School, Handong Global
-University <br> – Assisted the lecturer with arranging lecture room set
-up, marking exam papers, and checking attendance</p></li>
-</ul>
+<div id="aa" class="section level2">
+<h2>aa</h2>
 </div>
 
 
@@ -583,6 +488,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {
@@ -606,8 +516,8 @@ $(document).ready(function ()  {
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
     };
-    options.showAndHide = false;
-    options.smoothScroll = false;
+    options.showAndHide = true;
+    options.smoothScroll = true;
 
     // tocify
     var toc = $("#TOC").tocify(options).data("toc-tocify");

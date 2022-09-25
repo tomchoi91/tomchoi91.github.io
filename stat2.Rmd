@@ -2,7 +2,7 @@
 title: "Propensity Score Matching"
 subtitle: "Using GBSG2: German Breast Cancer Study Group 2 data"
 author: "Tom Choi"
-date: "`r Sys.Date()`"
+# date: "`r Sys.Date()`"
 output: 
   html_document: 
     code_folding: hide
@@ -13,6 +13,8 @@ output:
       smooth_scroll: true
     df_print: paged
 ---
+
+![](https://img.shields.io/badge/Using-R-blue)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

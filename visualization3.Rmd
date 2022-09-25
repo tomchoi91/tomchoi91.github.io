@@ -1,0 +1,92 @@
+---
+title: "SQL + R"
+subtitle: "Connecting SQL in RStudio/RMarkdown"
+author: "Tom Choi"
+# date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_depth: 5
+    toc_float: 
+      collapsed: true
+      smooth_scroll: true
+    df_print: paged
+---
+
+![](https://img.shields.io/badge/using-sas-orange)
+![](https://img.shields.io/badge/Using-R-blue)
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(dpi = 300)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+# knitr::opts_chunk$set(fig.width=10)
+
+```
+
+```{r packages}
+library(RPostgreSQL)
+library(RPostgres)
+library(flextable)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+```
+
+```{r, include=FALSE}
+pw <- "[Your Master Password]"
+```
+
+```{r, include=FALSE}
+# con <- dbConnect(RPostgres::Postgres(), 
+#                  host='localhost', 
+#                  port='5432', 
+#                  dbname='dvdrental', 
+#                  user='postgres', 
+#                  password=pw)
+rm(pw) # removes the password
+```
+
+
+## Database overview
+
+
+**Description** 
+
+The Sakila Database holds information about a company that rents movie DVDs.
+For this project, we will be querying the database to gain an understanding of the customer base, such as what the patterns in movie watching are across different customer groups, how they compare on payment earnings, and how the stores compare in their performance.
+
+And here is the Entity-relationship (ER) diagram for the DVD Rental database is provided below.
+
+![](./images/erd.png)
+
+
+**Tables**
+
+* `actor` : contains actors data including first name and last name
+* `film` : contains films data such as title, release year, length, rating, etc
+* `film_actor` : contains the relationships between films and actors
+* `category` : contains film’s categories data
+* `film_category` : containing the relationships between films and categories
+* `store` : contains the store data including manager staff and address
+* `inventory` : stores inventory data
+* `rental` : stores rental data
+* `payment` : stores customer’s payments
+* `staff` : stores staff data
+* `customer` : stores customer’s data
+* `address` : stores address data for staff and customers
+* `city` : stores the city names
+* `country` : stores the country names
+
+
+**Source**
+
+[Sakila Sample Database](https://dev.mysql.com/doc/sakila/en/)
+
+
+## aa
+
