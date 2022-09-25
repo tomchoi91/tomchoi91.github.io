@@ -14,7 +14,7 @@
 
 <title>SQL + R</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -39,6 +39,7 @@
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -61,6 +62,7 @@ if (window.hljs) {
   }
 }
 </script>
+
 
 
 
@@ -90,6 +92,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -318,7 +323,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -331,7 +336,7 @@ div.tocify {
   <a href="research.html">Research/Teaching</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Stat/ML
      
     <span class="caret"></span>
@@ -343,7 +348,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Visualization
      
     <span class="caret"></span>
@@ -351,6 +356,9 @@ div.tocify {
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="visualization2.html">Milk Production Data Exploration</a>
+    </li>
+    <li>
+      <a href="visualization3.html">Connecting SQL in RStudio/RMarkdown</a>
     </li>
   </ul>
 </li>
@@ -382,7 +390,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -398,14 +406,56 @@ div.tocify {
 </div>
 
 
-<p><img src="https://img.shields.io/badge/using-sas-orange" /> <img
+<p><img src="https://img.shields.io/badge/Using-SAS-orange" /> <br> <img
 src="https://img.shields.io/badge/Using-R-blue" /></p>
 <pre class="r"><code>library(RPostgreSQL)
 library(RPostgres)
 library(flextable)
-library(dplyr)
-library(ggplot2)
-library(tidyr)</code></pre>
+library(tidyverse)
+library(officer)
+library(wesanderson)</code></pre>
+<pre class="r"><code>con &lt;- dbConnect(RPostgres::Postgres(),
+                 host=&#39;localhost&#39;,
+                 port=&#39;5432&#39;,
+                 dbname=&#39;dvdrental&#39;,
+                 user=&#39;postgres&#39;,
+                 password=pw)
+rm(pw) # removes the password
+
+formats &lt;- list(
+  &quot;dod&quot; = function(x) ifelse(is.na(x), x, sprintf(&quot;%.0f%%&quot;, x)),
+  &quot;current_day&quot; = function(x) ifelse(is.na(x), x, sprintf(&quot;$%.0f&quot;, x)),
+  &quot;prev_day&quot; = function(x) ifelse(is.na(x), x, sprintf(&quot;$%.0f&quot;, x)),
+  &quot;film_revenue&quot; = function(x) ifelse(is.na(x), x, sprintf(&quot;$%.0f&quot;, x)),
+  &quot;film_revenue_pct&quot; = function(x) ifelse(is.na(x), x, sprintf(&quot;%.0f%%&quot;, x))
+  )
+
+std_border = fp_border(color=&quot;gray&quot;)
+
+flextables &lt;- function(data){
+    headers &lt;- tibble(col_keys = colnames(data),
+                  line1 = colnames(data) %&gt;%
+                  recode(
+                      &quot;actor_category&quot; = &quot;Category&quot;,
+                      &quot;count&quot; = &quot;Count&quot;,
+                      &quot;watcher_category&quot; = &quot;Category&quot;,
+                      &quot;film_id&quot; = &quot;Film ID&quot;,
+                      &quot;film_revenue&quot; = &quot;Total revenue ($)&quot;,
+                      &quot;film_revenue_pct&quot; = &quot;Total revenue (%)&quot;,
+                      &quot;store_id&quot; = &quot;Store ID&quot;,
+                      &quot;date&quot; = &quot;Date&quot;,
+                      &quot;current_day&quot; = &quot;Daily revenue&quot;,
+                      &quot;prev_day&quot; = &quot;Lag-1 revenue&quot;,
+                      &quot;dod&quot; = &quot;DoD growth&quot;
+                  )
+                  )
+    flextable(data) %&gt;%
+    {rlang::inject(set_formatter(., !!! formats))} %&gt;%
+    set_header_df(mapping = headers, key = &quot;col_keys&quot;) %&gt;%
+    theme_booktabs() %&gt;%
+    hline(part=&quot;body&quot;, border = std_border ) %&gt;%
+    autofit()
+}</code></pre>
 <div id="database-overview" class="section level2">
 <h2>Database overview</h2>
 <p><strong>Description</strong></p>
@@ -443,9 +493,397 @@ customers</li>
 <p><strong>Source</strong></p>
 <p><a href="https://dev.mysql.com/doc/sakila/en/">Sakila Sample
 Database</a></p>
+<p><br></p>
 </div>
-<div id="aa" class="section level2">
-<h2>aa</h2>
+<div id="practice-questions" class="section level2">
+<h2>Practice Questions</h2>
+<div id="question-13" class="section level3">
+<h3>Question 13</h3>
+<blockquote>
+<p>Please write a query to return the number of actors whose first name
+starts with ‘A’, ‘B’, ‘C’, or others. The order of your results doesn’t
+matter. You need to return 2 columns:</p>
+</blockquote>
+<ul>
+<li>First column: a group of actors based on the first letter of their
+first_name, use the following: <code>a_actors</code>,
+<code>b_actors</code>, <code>c_actors</code>, <code>other_actors</code>
+to represent their groups.</li>
+<li>Second column: the number of actors whose first name matches the
+pattern.</li>
+</ul>
+<pre class="r"><code>q13_dataframe &lt;- dbGetQuery(con, 
+&quot;with cte1 as (
+    select *, case 
+        when first_name like &#39;A%&#39; then &#39;a_actors&#39;
+        when first_name like &#39;B%&#39; then &#39;b_actors&#39;
+        when first_name like &#39;C%&#39; then &#39;c_actors&#39;
+        else &#39;other_actors&#39;
+        end as actor_category
+    from actor a
+)
+select actor_category, count(*)
+from cte1
+group by actor_category
+order by actor_category
+;&quot;
+)
+
+flextables(q13_dataframe)</code></pre>
+<template id="c70bc9b3-389e-4dc9-aa42-d6bf98664806"><style>
+.tabwid table{
+  border-spacing:0px !important;
+  border-collapse:collapse;
+  line-height:1;
+  margin-left:auto;
+  margin-right:auto;
+  border-width: 0;
+  display: table;
+  margin-top: 1.275em;
+  margin-bottom: 1.275em;
+  border-color: transparent;
+}
+.tabwid_left table{
+  margin-left:0;
+}
+.tabwid_right table{
+  margin-right:0;
+}
+.tabwid td {
+    padding: 0;
+}
+.tabwid a {
+  text-decoration: none;
+}
+.tabwid thead {
+    background-color: transparent;
+}
+.tabwid tfoot {
+    background-color: transparent;
+}
+.tabwid table tr {
+background-color: transparent;
+}
+</style><div class="tabwid"><style>.cl-25c4ea78{}.cl-25bca5de{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-25bccd84{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-25bccd85{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-25bcf39a{width:49.9pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-25bcf39b{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-25bcf39c{width:49.9pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-25bcf39d{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-25bcf39e{width:49.9pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-25bcf39f{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-25bcf3a0{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-25bcf3a1{width:49.9pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table class='cl-25c4ea78'>
+<thead><tr style="overflow-wrap:break-word;"><td class="cl-25bcf3a0"><p class="cl-25bccd84"><span class="cl-25bca5de">Category</span></p></td><td class="cl-25bcf3a1"><p class="cl-25bccd85"><span class="cl-25bca5de">Count</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-25bcf39b"><p class="cl-25bccd84"><span class="cl-25bca5de">a_actors</span></p></td><td class="cl-25bcf39a"><p class="cl-25bccd85"><span class="cl-25bca5de"> 13</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-25bcf39d"><p class="cl-25bccd84"><span class="cl-25bca5de">b_actors</span></p></td><td class="cl-25bcf39c"><p class="cl-25bccd85"><span class="cl-25bca5de">  8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-25bcf39f"><p class="cl-25bccd84"><span class="cl-25bca5de">c_actors</span></p></td><td class="cl-25bcf39e"><p class="cl-25bccd85"><span class="cl-25bca5de"> 18</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-25bcf39d"><p class="cl-25bccd84"><span class="cl-25bca5de">other_actors</span></p></td><td class="cl-25bcf39c"><p class="cl-25bccd85"><span class="cl-25bca5de">161</span></p></td></tr></tbody></table></div></template>
+<div class="flextable-shadow-host" id="02cfaf30-4fd4-41a0-8226-dd9a325054b0"></div>
+<script>
+var dest = document.getElementById("02cfaf30-4fd4-41a0-8226-dd9a325054b0");
+var template = document.getElementById("c70bc9b3-389e-4dc9-aa42-d6bf98664806");
+var caption = template.content.querySelector("caption");
+if(caption) {
+  caption.style.cssText = "display:block;text-align:center;";
+  var newcapt = document.createElement("p");
+  newcapt.appendChild(caption)
+  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
+}
+var fantome = dest.attachShadow({mode: 'open'});
+var templateContent = template.content;
+fantome.appendChild(templateContent);
+</script>
+
+<pre class="r"><code>q13_dataframe %&gt;% mutate(count = as.integer(count)) %&gt;%
+    ggplot(aes(x=actor_category, y=count, 
+               label=count, vjust=-0.5)) +
+    geom_col(fill = &quot;#01a08a&quot;) +
+    scale_y_continuous(expand = expansion(mult = c(0, .2))) +
+    xlab(&quot;Category&quot;) +
+    ylab(&quot;Count&quot;) +
+    geom_text()</code></pre>
+<p><img src="visualization3_files/figure-html/unnamed-chunk-2-1.png" width="2100" /></p>
+</div>
+<div id="question-15" class="section level3">
+<h3>Question 15</h3>
+<blockquote>
+<p>Please write a query to return the number of fast movie watchers vs
+slow movie watchers. The orders of your results doesn’t matter. A
+customer can only rent one movie per transaction.</p>
+</blockquote>
+<ul>
+<li>fast movie watcher: by average return their rentals within 5
+days.</li>
+<li>slow movie watcher: takes an average of &gt;5 days to return their
+rentals.</li>
+<li>Most customers have multiple rentals over time, you need to first
+compute the number of days for each rental transaction, then compute the
+average on the rounded up days. (e.g., if the rental period is 1 day and
+10 hours, count it as 2 days.)</li>
+<li>Skip the rentals that have not been returned yet (e.g., rental_date
+IS NULL)</li>
+</ul>
+<pre class="r"><code>q15_dataframe &lt;- dbGetQuery(con, 
+&quot;with cte1 as (
+    select *, return_date - rental_date as rental_period 
+    from rental
+),
+cte2 as (
+    select *, extract(days from rental_period)+1 as rental_days
+    from cte1
+),
+cte3 as (select customer_id, avg(rental_days) avg_rental
+    from cte2
+    where rental_days is not null
+    group by customer_id
+)
+,
+cte4 as (
+    select *, case 
+    when avg_rental &gt; 5 then &#39;slow movie watcher&#39;
+    else &#39;fast movie watcher&#39;
+    end watcher_category
+    from cte3
+--;
+)
+select watcher_category, count(customer_id)
+from cte4
+group by watcher_category
+;
+&quot;
+)
+
+flextables(q15_dataframe)</code></pre>
+<template id="29ddf5f4-37e2-4ed8-a096-65a475e201e1"><style>
+.tabwid table{
+  border-spacing:0px !important;
+  border-collapse:collapse;
+  line-height:1;
+  margin-left:auto;
+  margin-right:auto;
+  border-width: 0;
+  display: table;
+  margin-top: 1.275em;
+  margin-bottom: 1.275em;
+  border-color: transparent;
+}
+.tabwid_left table{
+  margin-left:0;
+}
+.tabwid_right table{
+  margin-right:0;
+}
+.tabwid td {
+    padding: 0;
+}
+.tabwid a {
+  text-decoration: none;
+}
+.tabwid thead {
+    background-color: transparent;
+}
+.tabwid tfoot {
+    background-color: transparent;
+}
+.tabwid table tr {
+background-color: transparent;
+}
+</style><div class="tabwid"><style>.cl-2677f276{}.cl-266eecb2{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-266eecb3{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-266eecb4{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-266f5152{width:49.9pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-266f5153{width:116.5pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-266f5154{width:49.9pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-266f5155{width:116.5pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-266f5156{width:49.9pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-266f5157{width:116.5pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table class='cl-2677f276'>
+<thead><tr style="overflow-wrap:break-word;"><td class="cl-266f5157"><p class="cl-266eecb3"><span class="cl-266eecb2">Category</span></p></td><td class="cl-266f5156"><p class="cl-266eecb4"><span class="cl-266eecb2">Count</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-266f5153"><p class="cl-266eecb3"><span class="cl-266eecb2">slow movie watcher</span></p></td><td class="cl-266f5152"><p class="cl-266eecb4"><span class="cl-266eecb2">487</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-266f5155"><p class="cl-266eecb3"><span class="cl-266eecb2">fast movie watcher</span></p></td><td class="cl-266f5154"><p class="cl-266eecb4"><span class="cl-266eecb2">112</span></p></td></tr></tbody></table></div></template>
+<div class="flextable-shadow-host" id="c87e879c-8d70-449d-80bb-e837c6888bba"></div>
+<script>
+var dest = document.getElementById("c87e879c-8d70-449d-80bb-e837c6888bba");
+var template = document.getElementById("29ddf5f4-37e2-4ed8-a096-65a475e201e1");
+var caption = template.content.querySelector("caption");
+if(caption) {
+  caption.style.cssText = "display:block;text-align:center;";
+  var newcapt = document.createElement("p");
+  newcapt.appendChild(caption)
+  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
+}
+var fantome = dest.attachShadow({mode: 'open'});
+var templateContent = template.content;
+fantome.appendChild(templateContent);
+</script>
+
+<pre class="r"><code>q15_dataframe %&gt;% mutate(count = as.integer(count)) %&gt;%
+    ggplot(aes(x=watcher_category, y=count, 
+               label=count, vjust=-0.5)) +
+    geom_col(fill = c(&quot;#ff8b00&quot;, &quot;#92f08f&quot;)) +
+    scale_y_continuous(expand = expansion(mult = c(0, .2))) +
+    xlab(&quot;Category&quot;) +
+    ylab(&quot;Count&quot;) +
+    geom_text()</code></pre>
+<p><img src="visualization3_files/figure-html/unnamed-chunk-3-1.png" width="2100" /></p>
+</div>
+<div id="question-58" class="section level3">
+<h3>Question 58</h3>
+<blockquote>
+<p>Write a query to return the percentage of revenue for each of the
+following ﬁlms: film_id &lt;= 10</p>
+</blockquote>
+<ul>
+<li>Formula: revenue (film_id x) * 100.0/ revenue of all movies</li>
+<li>The order of your results doesn’t matter</li>
+</ul>
+<pre class="r"><code>q58_dataframe &lt;- dbGetQuery(con, 
+&quot;with cte1 as (
+    select distinct film_id, 
+    sum(amount) over(partition by film_id) film_revenue
+    from payment p
+    left join rental r 
+    using (rental_id)
+    left join inventory i 
+    using (inventory_id)
+    where film_id &lt;= 10
+)
+select *, 
+    film_revenue *100.0 / sum(film_revenue) over() film_revenue_pct
+    from cte1
+    order by film_id
+;&quot;)
+
+flextables(distinct(q58_dataframe))</code></pre>
+<template id="de81e3cc-4571-4a27-9d23-70264f714d5a"><style>
+.tabwid table{
+  border-spacing:0px !important;
+  border-collapse:collapse;
+  line-height:1;
+  margin-left:auto;
+  margin-right:auto;
+  border-width: 0;
+  display: table;
+  margin-top: 1.275em;
+  margin-bottom: 1.275em;
+  border-color: transparent;
+}
+.tabwid_left table{
+  margin-left:0;
+}
+.tabwid_right table{
+  margin-right:0;
+}
+.tabwid td {
+    padding: 0;
+}
+.tabwid a {
+  text-decoration: none;
+}
+.tabwid thead {
+    background-color: transparent;
+}
+.tabwid tfoot {
+    background-color: transparent;
+}
+.tabwid table tr {
+background-color: transparent;
+}
+</style><div class="tabwid"><style>.cl-27517302{}.cl-274a4a50{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-274a4a51{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-274a4a52{width:104.3pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-274a4a53{width:108pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-274a4a54{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-274a4a55{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-274a4a56{width:104.3pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-274a4a57{width:108pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-274a4a58{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-274a4a59{width:104.3pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-274a4a5a{width:108pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table class='cl-27517302'>
+<thead><tr style="overflow-wrap:break-word;"><td class="cl-274a4a58"><p class="cl-274a4a51"><span class="cl-274a4a50">Film ID</span></p></td><td class="cl-274a4a59"><p class="cl-274a4a51"><span class="cl-274a4a50">Total revenue ($)</span></p></td><td class="cl-274a4a5a"><p class="cl-274a4a51"><span class="cl-274a4a50">Total revenue (%)</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-274a4a54"><p class="cl-274a4a51"><span class="cl-274a4a50">1</span></p></td><td class="cl-274a4a52"><p class="cl-274a4a51"><span class="cl-274a4a50">$34</span></p></td><td class="cl-274a4a53"><p class="cl-274a4a51"><span class="cl-274a4a50">5%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">2</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$53</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">7%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">3</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$35</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">5%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">4</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$84</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">11%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">5</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$48</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">6%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">6</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$112</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">15%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">7</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$83</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">11%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">8</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$87</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">12%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">9</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$72</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">10%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-274a4a55"><p class="cl-274a4a51"><span class="cl-274a4a50">10</span></p></td><td class="cl-274a4a56"><p class="cl-274a4a51"><span class="cl-274a4a50">$132</span></p></td><td class="cl-274a4a57"><p class="cl-274a4a51"><span class="cl-274a4a50">18%</span></p></td></tr></tbody></table></div></template>
+<div class="flextable-shadow-host" id="da2f027c-2470-447a-b152-7f8f88ffc64e"></div>
+<script>
+var dest = document.getElementById("da2f027c-2470-447a-b152-7f8f88ffc64e");
+var template = document.getElementById("de81e3cc-4571-4a27-9d23-70264f714d5a");
+var caption = template.content.querySelector("caption");
+if(caption) {
+  caption.style.cssText = "display:block;text-align:center;";
+  var newcapt = document.createElement("p");
+  newcapt.appendChild(caption)
+  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
+}
+var fantome = dest.attachShadow({mode: 'open'});
+var templateContent = template.content;
+fantome.appendChild(templateContent);
+</script>
+
+<pre class="r"><code>distinct(q58_dataframe) %&gt;%
+    ggplot(aes(x=film_id, y=film_revenue, 
+               label=sprintf(&quot;$%.0f&quot;, film_revenue), vjust=-0.5)) +
+    geom_col(fill = &quot;steelblue&quot;) +
+    scale_x_continuous(breaks=seq(1, 10, 1)) +
+    scale_y_continuous(expand = expansion(mult = c(0, .2))) +
+    xlab(&quot;Film ID&quot;) +
+    ylab(&quot;Total revenue ($)&quot;) +
+    geom_text()</code></pre>
+<p><img src="visualization3_files/figure-html/unnamed-chunk-4-1.png" width="2100" /></p>
+</div>
+<div id="question-80" class="section level3">
+<h3>Question 80</h3>
+<blockquote>
+<p>Please write a query to return DoD(day over day) growth for each
+store from April 24, 2007 (inclusive) to April 31, 2007 (inclusive).</p>
+</blockquote>
+<ul>
+<li><code>DoD</code>: (current_day/ prev_day -1) * 100.0</li>
+<li>Multiply dod growth to 100.0 to get percentage of growth</li>
+<li>Use ROUND to convert dod growth to the nearest integer</li>
+</ul>
+<pre class="r"><code>q80_dataframe &lt;- dbGetQuery(con, 
+&quot;with cte1 as(
+    select store_id, 
+    date(payment_date) date,
+    sum(amount) current_day
+    from payment p 
+    left join rental r 
+    using (rental_id)
+    left join inventory i 
+    using (inventory_id)
+    where payment_date &gt;= &#39;2007-04-01&#39; and payment_date &lt;= &#39;2007-04-30&#39;
+    group by store_id, date(payment_date)
+),
+cte2 as (
+    select *, lag(current_day) over(partition by store_id order by date) prev_day
+    from cte1
+)
+select *, round((current_day/prev_day-1)*100.0) DoD
+from cte2
+;&quot;
+)
+
+flextables(q80_dataframe) %&gt;%
+    merge_v(j = c(&quot;store_id&quot;)) %&gt;%
+    valign(j = c(&quot;store_id&quot;), valign = &quot;top&quot;)</code></pre>
+<template id="8c9aa78d-6a81-4c47-8f4f-80633650dc2c"><style>
+.tabwid table{
+  border-spacing:0px !important;
+  border-collapse:collapse;
+  line-height:1;
+  margin-left:auto;
+  margin-right:auto;
+  border-width: 0;
+  display: table;
+  margin-top: 1.275em;
+  margin-bottom: 1.275em;
+  border-color: transparent;
+}
+.tabwid_left table{
+  margin-left:0;
+}
+.tabwid_right table{
+  margin-right:0;
+}
+.tabwid td {
+    padding: 0;
+}
+.tabwid a {
+  text-decoration: none;
+}
+.tabwid thead {
+    background-color: transparent;
+}
+.tabwid tfoot {
+    background-color: transparent;
+}
+.tabwid table tr {
+background-color: transparent;
+}
+</style><div class="tabwid"><style>.cl-28047f7e{}.cl-27fd27ce{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-27fd27cf{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-27fd27d0{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-27ff65f2{width:78.6pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65f3{width:91.5pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65f4{width:87.8pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65f5{width:76.8pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65f6{width:60.9pt;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65f7{width:87.8pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65f8{width:78.6pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65f9{width:91.5pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65fa{width:60.9pt;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65fb{width:76.8pt;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(190, 190, 190, 1.00);border-top: 1pt solid rgba(190, 190, 190, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff65fc{width:91.5pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff8cda{width:60.9pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff8cdb{width:87.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff8cdc{width:76.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-27ff8cdd{width:78.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table class='cl-28047f7e'>
+<thead><tr style="overflow-wrap:break-word;"><td class="cl-27ff8cda"><p class="cl-27fd27cf"><span class="cl-27fd27ce">Store ID</span></p></td><td class="cl-27ff8cdc"><p class="cl-27fd27cf"><span class="cl-27fd27ce">Date</span></p></td><td class="cl-27ff8cdb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">Daily revenue</span></p></td><td class="cl-27ff65fc"><p class="cl-27fd27cf"><span class="cl-27fd27ce">Lag-1 revenue</span></p></td><td class="cl-27ff8cdd"><p class="cl-27fd27cf"><span class="cl-27fd27ce">DoD growth</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td  rowspan="12"class="cl-27ff65f6"><p class="cl-27fd27d0"><span class="cl-27fd27ce">1</span></p></td><td class="cl-27ff65f5"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-05</span></p></td><td class="cl-27ff65f4"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$119</span></p></td><td class="cl-27ff65f3"><p class="cl-27fd27cf"><span class="cl-27fd27ce"></span></p></td><td class="cl-27ff65f2"><p class="cl-27fd27cf"><span class="cl-27fd27ce"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-06</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1044</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$119</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">779%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-07</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1011</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1044</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-08</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1135</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1011</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">12%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-09</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$971</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1135</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-15%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-10</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$981</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$971</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">1%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-11</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1029</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$981</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">5%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-12</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$995</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1029</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-26</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$155</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$995</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-84%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-27</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1309</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$155</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">746%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-28</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1175</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1309</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-10%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-29</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1458</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1175</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">24%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  rowspan="12"class="cl-27ff65fa"><p class="cl-27fd27d0"><span class="cl-27fd27ce">2</span></p></td><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-05</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$155</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce"></span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-06</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1034</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$155</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">568%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-07</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$974</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1034</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-6%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-08</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1092</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$974</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">12%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-09</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1097</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1092</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">0%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-10</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$993</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1097</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-10%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-11</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$912</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$993</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-8%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-12</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$936</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$912</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">3%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-26</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$193</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$936</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-79%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-27</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1365</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$193</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">609%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-28</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1448</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1365</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">6%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-27ff65fb"><p class="cl-27fd27cf"><span class="cl-27fd27ce">2007-04-29</span></p></td><td class="cl-27ff65f7"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1260</span></p></td><td class="cl-27ff65f9"><p class="cl-27fd27cf"><span class="cl-27fd27ce">$1448</span></p></td><td class="cl-27ff65f8"><p class="cl-27fd27cf"><span class="cl-27fd27ce">-13%</span></p></td></tr></tbody></table></div></template>
+<div class="flextable-shadow-host" id="c859d2fc-3912-4621-88fc-3a4a6f918627"></div>
+<script>
+var dest = document.getElementById("c859d2fc-3912-4621-88fc-3a4a6f918627");
+var template = document.getElementById("8c9aa78d-6a81-4c47-8f4f-80633650dc2c");
+var caption = template.content.querySelector("caption");
+if(caption) {
+  caption.style.cssText = "display:block;text-align:center;";
+  var newcapt = document.createElement("p");
+  newcapt.appendChild(caption)
+  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
+}
+var fantome = dest.attachShadow({mode: 'open'});
+var templateContent = template.content;
+fantome.appendChild(templateContent);
+</script>
+
+</div>
 </div>
 
 

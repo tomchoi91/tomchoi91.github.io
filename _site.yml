@@ -25,6 +25,8 @@ navbar:
       #   href: visualization1.html
       - text: "Milk Production Data Exploration"
         href: visualization2.html
+      - text: "Connecting SQL in RStudio/RMarkdown"
+        href: visualization3.html
   right:
     - icon: fas fa-envelope
       href: contact.html
