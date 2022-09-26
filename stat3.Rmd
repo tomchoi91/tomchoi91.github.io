@@ -1,0 +1,72 @@
+---
+title: "Structural Equation Modeling"
+subtitle: "Poster Presentation 1 & 2"
+author: "Tom Choi"
+# date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_depth: 5
+    toc_float: 
+      collapsed: true
+      smooth_scroll: true
+    df_print: paged
+---
+
+![](https://img.shields.io/badge/Using-Mplus-red) <br>
+![](https://img.shields.io/badge/Using-SAS-orange) <br>
+![](https://img.shields.io/badge/Using-R-blue)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(dpi = 300)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+# knitr::opts_chunk$set(fig.width=10)
+
+```
+
+
+
+## 1. Model Fit Index Performance Evalution
+
+
+**Title** 
+
+[*Monte Carlo Simulation to Study Fit Index Performances under the Varying Modeling Conditions: Comparing R and SAS Results*](https://github.com/tomchoi91/SEM-Poster-Presentation/blob/main/documents/sem%20poster_CHOI.pdf)
+
+**Abstract**
+
+In this study, Monte Carlo methods were used to investigate the impact on fit indexes of varying sample size, model size, model type, and degree of model misspecification. Monte Carlo simulation is one of statistical techniques that use pseudo-random sampling (e.g., pulling random numbers from the given distribution) to derive approximate solutions to a variety of mathematical problems.
+
+This study specifically addresses the sensitivity of various fit indices to various model modeling conditions such as sample size, model size, model type, and degree of model misspecification. Previous literatures have provided the guidelines for which fit indices must be used and proposed cutoff criteria for those fit indexes in model fit assessment. According to Hu and Bentler (1998), a good index should approach its maximum under correct specification but also degrade substantially under misspecification. It also should be sensitive to model misspecification, but not to types of models.
+
+Recently, however, many fit indices are found not only to be sensitive to model misspecification (desirable), but also be sensitive to other modeling conditions such as types of model (e.g., CFA, SR, or LGM; undesirable), model complexity, and sample sizes, thus invalidating the previously proposed cutoff criteria. Therefore, this study revisits the notion of so-called global cutoff for model fit indices and examine the performance of those indices while considering relevant factors.
+
+The results were consistent with the findings from Fan & Sivo (2007) to the some degrees, but did not perfectly replicate them. Implications and Limitations are discussed at the end.
+
+**Citation**
+
+Choi. D. (2019). Monte Carlo Simulation to Study Fit Index Performances under the Varying Modeling Conditions: Comparing R and SAS Results [Unpublished project]. Department of Educational Psychology, University of Nebraska-Lincoln.
+
+
+
+## 2. Longitudianl Invariance Testing
+
+
+**Title** 
+
+[*Testing Longitudinal Invariance of Parent Involvement in School using ECLS-K:2011*](https://github.com/tomchoi91/2022-Early-Childhood-Summit-Presentation/blob/main/documents/poster_CHOI.pdf)
+
+**Abstract**
+
+Early childhood researchers are inherently interested in studying factors forecasting/influencing children’s outcomes at school. Parental involvement in education is one of them. ECLS-K: 2011, a large-scale longitudinal study, has data about parental involvement in education. However, whether its psychometric property is equivalent across time and between groups of individuals is unknown. 
+
+This study aimed to test whether the items for parental involvement in school have the same meaning over time. The kindergarten to 3rd-grade student sample data was drawn from ECLS-K: 2011 (N=16035). A series of confirmatory factor analysis models were run to examine the factor structure of parental involvement in school. Following the standard guideline for testing measurement invariance of categorical variables, a configural invariance model was set up and then was tested for scalar invariance (Muthén, & Muthén, 1998-2017). The weighted least-squares mean and variance adjusted estimator and probit link function was used for data analysis. All analyses were conducted using Mplus version 8.4. 
+
+The results showed that scalar invariance was not achieved with given data. Since the full measurement invariance did not hold, partial measurement invariance was sought out. This involves relaxing some equality constraints on the measurement parameters. The backward method (sequentially releasing parameters) was used to identify noninvariant parameters (Putnick & Bornstein, 2016). Implications for the study results will follow.  
+
+**Citation**
+
+Choi, D. & Koziol, N. (2022, April). Testing Longitudinal Invariance of Parent Involvement in School using ECLS-K:2011. Poster presented at the 2022 CYFS Summit on Research in Early Childhood, Lincoln, Nebraska, United States.
