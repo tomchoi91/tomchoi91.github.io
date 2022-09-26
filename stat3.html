@@ -14,7 +14,7 @@
 
 <title>Structural Equation Modeling</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -66,6 +66,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
 
@@ -90,6 +91,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -318,7 +322,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -331,7 +335,7 @@ div.tocify {
   <a href="research.html">Research/Teaching</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Stat/ML
      
     <span class="caret"></span>
@@ -340,10 +344,13 @@ div.tocify {
     <li>
       <a href="stat2.html">Propensity Score Matching</a>
     </li>
+    <li>
+      <a href="stat3.html">Structural Equation Modeling</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Visualization
      
     <span class="caret"></span>
@@ -385,7 +392,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -437,14 +444,14 @@ the performance of those indices while considering relevant factors.</p>
 <p>The results were consistent with the findings from Fan &amp; Sivo
 (2007) to the some degrees, but did not perfectly replicate them.
 Implications and Limitations are discussed at the end.</p>
-<p><strong>citation</strong></p>
+<p><strong>Citation</strong></p>
 <p>Choi. D. (2019). Monte Carlo Simulation to Study Fit Index
 Performances under the Varying Modeling Conditions: Comparing R and SAS
 Results [Unpublished project]. Department of Educational Psychology,
 University of Nebraska-Lincoln.</p>
 </div>
-<div id="longitudianl-invariance-testing" class="section level2">
-<h2>2. Longitudianl Invariance Testing</h2>
+<div id="longitudinal-invariance-testing" class="section level2">
+<h2>2. Longitudinal Invariance Testing</h2>
 <p><strong>Title</strong></p>
 <p><a
 href="https://github.com/tomchoi91/2022-Early-Childhood-Summit-Presentation/blob/main/documents/poster_CHOI.pdf"><em>Testing
@@ -475,7 +482,7 @@ equality constraints on the measurement parameters. The backward method
 (sequentially releasing parameters) was used to identify noninvariant
 parameters (Putnick &amp; Bornstein, 2016). Implications for the study
 results will follow.</p>
-<p><strong>citation</strong></p>
+<p><strong>Citation</strong></p>
 <p>Choi, D. &amp; Koziol, N. (2022, April). Testing Longitudinal
 Invariance of Parent Involvement in School using ECLS-K:2011. Poster
 presented at the 2022 CYFS Summit on Research in Early Childhood,

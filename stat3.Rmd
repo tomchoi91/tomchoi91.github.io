@@ -52,7 +52,7 @@ Choi. D. (2019). Monte Carlo Simulation to Study Fit Index Performances under th
 
 
 
-## 2. Longitudianl Invariance Testing
+## 2. Longitudinal Invariance Testing
 
 
 **Title** 
