@@ -18,13 +18,15 @@ output:
 ![Milk COWculator](./images/dairy/cowculator.jpg)
 
 ```{r setup, include=FALSE}
-
-knitr::opts_chunk$set(message = F, warning = F)
-options(digits = 3)
+knitr::opts_chunk$set(echo = TRUE)
+# knitr::opts_chunk$set(dpi = 300)
+# knitr::opts_chunk$set(fig.width = 10)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
 
 ```
 
-```{r dataprep, include=FALSE}
+```{r packages, message = FALSE}
 # devtools::install_github("clauswilke/ggtextures")
 library(tidyverse)
 library(ggtextures)
@@ -35,8 +37,11 @@ library(skimr)
 library(usmap)
 library(lubridate)
 
-# Reading in and skimming the CSV file
+```
 
+
+```{r dataprep}
+# Reading in and skimming the CSV file
 milk_data <- read.csv("./files/dairy/dairy_performance.csv") %>% set_names(., tolower(names(.)))
 
 pictures <- tibble(
@@ -59,7 +64,6 @@ plotter1 <- function(data, x=NA, y=NA, fill=NA, image=NA, label=NA, ...){
     scale_y_continuous(expand = expansion(mult = c(0, .2))) +
     theme(legend.position = "none")
 }
-
 
 ```
 
@@ -113,7 +117,6 @@ Specifically, we analyzed:
 The first step in our analysis was to read in the data.  The data was stored in a CSV file, so we used the readr package to import the data.  Additionally, we used the skimr package to help us understand the data set at a glance.  The skimr package provided some useful insight, particularly regarding data cleaning that would be necessary in the subsequent steps.  For example, skimr highlighted missing data that would need to be addressed in our analysis.
 
 ```{r}
-
 # skim(milk_data)
 
 ```
@@ -123,7 +126,6 @@ As one goal of our analysis was to compare milk production by region of the U.S.
 
 
 ```{r}  
-
 # Creating 'region' variable
 
 milk_data <- milk_data %>%
@@ -143,7 +145,6 @@ Next, the data were cleaned with the goals of our analyses in mind.  First, the 
 
 ```{r}
 # Use mutate/lubridate to make datetime column (single column in format XXXX-XX-XX)
-
 # Cleaning data; renaming variables
 milk_analysis <- milk_data %>%
   mutate(herd = herd.name,
@@ -197,7 +198,7 @@ milk_lbs_ecm <- milk_analysis %>%
   drop_na()
   
 plotter1(data=milk_lbs_ecm, x=breed, y=ecm, fill=breed, 
-         image=image, label=ecm ,vjust=-0.5) +
+         image=image, label=ecm) +
     labs(title="Energy Corrected Milk Pounds by Breed of Cow", 
          x="Breed", y="ECM Pounds") 
 
@@ -216,7 +217,7 @@ component_lbs <- milk_analysis %>%
   drop_na() 
 
 plotter1(data=component_lbs, x=breed, y=fat_protein_lbs, fill=breed, 
-         image=image, label=fat_protein_lbs, vjust=-0.5) +
+         image=image, label=fat_protein_lbs) +
     labs(title="Combined Fat and Protein Pounds by Breed of Cow", 
          x="Breed", y="Fat and Protein Pounds") 
 
@@ -347,7 +348,6 @@ milk_histrogram <- milk_analysis %>%
   # guides(fill=F, color=F) +
   labs(title="Holstein Milk Pounds by Region", x="Milk Pounds", y="Count of Holstein cows")  
 
-# milk_histrogram
 p1<-plotly_build(milk_histrogram)
 # names(p1$x$data) <-c("PNW", "UMW", "NE", "HP", "NA")
 # names(p1$x$data)
@@ -445,7 +445,7 @@ milk_by_time <- milk_analysis %>%
     mutate(date=as.Date(paste(Year, Month, "01", sep = "-")))
 
 # Most basic bubble plot
-p <- ggplot(milk_by_time, aes(x=date, y=milk_lbs)) +
+p1 <- ggplot(milk_by_time, aes(x=date, y=milk_lbs)) +
   geom_line(color="#69b3a2") +
   geom_point() +
   geom_smooth(method = "loess") +
@@ -455,7 +455,7 @@ p <- ggplot(milk_by_time, aes(x=date, y=milk_lbs)) +
   theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
   labs(title="Milk across time (overall)",  y="milk (lbs)", x="date")
 
-ggplotly(p)
+ggplotly(p1)
 
 ```
 
@@ -471,7 +471,7 @@ milk_by_time_holstein <- milk_analysis %>%
     mutate(date=as.Date(paste(Year, Month, "01", sep = "-")))
 
 # Most basic bubble plot
-p <- ggplot(milk_by_time_holstein, aes(x=date, y=milk_lbs)) +
+p2 <- ggplot(milk_by_time_holstein, aes(x=date, y=milk_lbs)) +
   geom_line(color="#FF9933") +
   geom_point() +
   geom_smooth(method = "loess") +
@@ -480,7 +480,7 @@ p <- ggplot(milk_by_time_holstein, aes(x=date, y=milk_lbs)) +
   theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
   labs(title="Milk across time (Holstein)",  y="milk (lbs)", x="date")
 
-ggplotly(p)
+ggplotly(p2)
 
 ```
 
@@ -495,7 +495,7 @@ milk_by_time_jersey <- milk_analysis %>%
 
 
 # Most basic bubble plot
-p <- ggplot(milk_by_time_jersey, aes(x=date, y=milk_lbs)) +
+p3 <- ggplot(milk_by_time_jersey, aes(x=date, y=milk_lbs)) +
     geom_line(color="firebrick") +
     geom_point() + 
     geom_smooth(method = "loess") +
@@ -503,7 +503,8 @@ p <- ggplot(milk_by_time_jersey, aes(x=date, y=milk_lbs)) +
     theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
     labs(title="Milk across time (Jersey)",  y="milk (lbs)", x="date")
 
-ggplotly(p)
+ggplotly(p3)
+
 ```
 
 ```{r}
@@ -517,7 +518,7 @@ milk_by_time_crossbred <- milk_analysis %>%
     mutate(date=as.Date(paste(Year, Month, "01", sep = "-")))
 
 # Most basic bubble plot
-p <- ggplot(milk_by_time_crossbred, aes(x=date, y=milk_lbs)) +
+p4 <- ggplot(milk_by_time_crossbred, aes(x=date, y=milk_lbs)) +
   geom_line(color="steelblue") +
   geom_point() +
   geom_smooth() +
@@ -526,7 +527,7 @@ p <- ggplot(milk_by_time_crossbred, aes(x=date, y=milk_lbs)) +
   theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
   labs(title="Milk across time (Crossbred)",  y="milk (lbs)", x="date")
 
-ggplotly(p)
+ggplotly(p4)
 
 ```
 
