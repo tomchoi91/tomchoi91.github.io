@@ -27,7 +27,8 @@ options(digits = 3)
 ```{r dataprep, include=FALSE}
 
 library(tidyverse)
-# library(ggtextures)
+library(ggtextures)
+library(ggtextures)
 library(magick)
 library(rsvg)
 library(plotly)
@@ -37,14 +38,34 @@ library(lubridate)
 
 # Reading in and skimming the CSV file
 
-milk_data <- read_csv("./files/dairy/dairy_performance.csv")
+milk_data <- read.csv("./files/dairy/dairy_performance.csv") %>% set_names(., tolower(names(.)))
+
+pictures <- tibble(
+  breed = c("Jersey", "Crossbred", "Norwegian Red", "Holstein"),
+  image = list(
+    image_read("./images/dairy/Jersey.jpg"),
+    image_read("./images/dairy/Crossbred.jpg"), 
+    image_read("./images/dairy/NorwegianR.jpg"),
+    image_read("./images/dairy/Holstein.jpg")
+  )
+)
+
+plotter1 <- function(data, x=NA, y=NA, fill=NA, image=NA, label=NA, ...){
+    rlang::inject(ggplot(data, aes(x={{x}}, y={{y}}, fill={{fill}}, image={{image}}, 
+                     label=sprintf("%.2f", {{label}}), vjust=-0.5))) +
+    geom_isotype_col(
+    img_height = NULL, img_width = grid::unit(1, "null"),
+    ncol = 1, nrow = 1, hjust = 1, vjust = 0.5) +
+    geom_text(size = 8, position = position_dodge2(width = .9, preserve = "single"))  +
+    scale_y_continuous(expand = expansion(mult = c(0, .2)))
+}
 
 
 ```
 
 ## Introduction
 
-The data set we selected for our analysis is a collection of aggregated milk production and herd data from actual dairy farms across the United States. The data was provided by a dairy nutrition consulting company in Omaha, NE, who as part of their services, collects and analyzes dairy records to help inform producer decisions.  The data originates at the farm level from monthly "tests", where the milk production and milk component data (fat and protein %) from individual cows are measured and stored on various herd management software platforms owned by the dairies.  These data are then collected by the nutrition consulting company and are summarized into reports for individual herds.
+The data set we selected for our analysis is a collection of aggregated milk production and herd data from actual dairy farms across the United states. The data was provided by a dairy nutrition consulting company in Omaha, NE, who as part of their services, collects and analyzes dairy records to help inform producer decisions.  The data originates at the farm level from monthly "tests", where the milk production and milk component data (fat and protein %) from individual cows are measured and stored on various herd management software platforms owned by the dairies.  These data are then collected by the nutrition consulting company and are summarized into reports for individual herds.
 
 According to the dairy nutrition consulting company, the data has rarely been assessed on a grand scale (i.e. all analyses have previously been conducted at the herd level).  Therefore, our group was chiefly interested in exploring the data set in its entirety, drawing comparisons in milk production performance between breeds of cows, state in which the milk is produced, and milk production over time.  
 
@@ -55,7 +76,7 @@ https://www.dropbox.com/s/p83hoqvs03byonw/dairy_performance.csv?dl=0
 The data was collected over a period of six years from commercial dairy farms (2016 - 2021) in 16 states.  There are a number of performance metrics listed in the data set as related to dairy production (milk yield, fat and protein percent, etc.) as well as herd dynamics and reproduction statistics.  The variables our group was primarily interested in are described below:
 
 * HERD NAME: Anonymised listing of herds (to protect producer privacy)
-* STATE: State abbreviation (U.S.A.)
+* state: state abbreviation (U.S.A.)
 * BREED:  Breed type of dairy cow
 * TOTAL COWS:  Total cows in the herd, including lactating and non-lactating
 * COWS IN MILK:  Total lactating cows in the herd
@@ -92,7 +113,7 @@ The first step in our analysis was to read in the data.  The data was stored in 
 
 ```{r}
 
-# skim(milk_data)
+skim(milk_data)
 
 ```
 
@@ -102,30 +123,16 @@ As one goal of our analysis was to compare milk production by region of the U.S.
 
 ```{r}  
 
-# Creating 'regions' variable
+# Creating 'region' variable
 
 milk_data <- milk_data %>%
-  mutate(region = STATE)
-# Assigning states to Pacific Northwest (PNW))
-milk_data$region[milk_data$region == "ID"] <- "PNW"
-milk_data$region[milk_data$region == "UT"] <- "PNW"
-milk_data$region[milk_data$region == "WA"] <- "PNW"
-milk_data$region[milk_data$region == "CA"] <- "PNW"
-# Assigning states to High Plains (HP)
-milk_data$region[milk_data$region == "CO"] <- "HP"
-milk_data$region[milk_data$region == "TX"] <- "HP"
-milk_data$region[milk_data$region == "NM"] <- "HP"
-# Assigning states to Upper Midwest (UMW)
-milk_data$region[milk_data$region == "IA"] <- "UMW"
-milk_data$region[milk_data$region == "IL"] <- "UMW"
-milk_data$region[milk_data$region == "MT"] <- "UMW"
-milk_data$region[milk_data$region == "NE"] <- "UMW"
-milk_data$region[milk_data$region == "WI"] <- "UMW"
-milk_data$region[milk_data$region == "SD"] <- "UMW"
-# Assigning states to Northeast (NE)
-milk_data$region[milk_data$region == "NY"] <- "NE"
-milk_data$region[milk_data$region == "PA"] <- "NE"
-milk_data$region[milk_data$region == "VA"] <- "NE"
+  mutate(region = case_when(
+      state %in% c("ID","UT","WA","CA") ~ "PNW", # Assigning states to Pacific Northwest (PNW)
+      state %in% c("CO","TX","NM") ~ "HP", # Assigning states to High Plains (HP)
+      state %in% c("IA","IL","MT","NE","WI","SD") ~ "UMW", # Assigning states to Upper Midwest (UMW)
+      state %in% c("NY","PA","VA") ~ "NE" # Assigning states to Northeast (NE)
+      ))
+
 
 ```
 
@@ -136,27 +143,26 @@ Next, the data were cleaned with the goals of our analyses in mind.  First, the 
 ```{r}
 # Use mutate/lubridate to make datetime column (single column in format XXXX-XX-XX)
 
-milk <- milk_data %>%
-  mutate(date2=mdy(`EVALUATION DATE`))
-
 # Cleaning data; renaming variables
-milk_analysis <- milk %>%
-  rename(herd = `HERD NAME`, state = STATE, breed = BREED, 
-         total_cows = `TOTAL COWS`, cows_in_milk = `COWS IN MILK`, 
-         milk_lbs = `MILK HERD`, fat_pct = `FAT PERCENT AVERAGE`, 
-         protein_pct = `PROTEIN PERCENT AVERAGE`, 
-         fat_protein_lbs = `FAT AND PROTEIN`, ecm = `ENERGY CORRECTED MILK`, 
-         date = `EVALUATION DATE`) %>%
-
+milk_analysis <- milk_data %>%
+  mutate(herd = herd.name,
+         total_cows = total.cows, 
+         cows_in_milk = cows.in.milk, 
+         milk_lbs = milk.herd, 
+         fat_pct = fat.percent.average, 
+         protein_pct = protein.percent.average, 
+         fat_protein_lbs = fat.and.protein, 
+         ecm = energy.corrected.milk, 
+         date = lubridate::mdy(evaluation.date),
+         across(breed:ecm, ~ifelse(.x==0, NA, .x), # Replace 0 values with 'NA'
+         )
+         )  %>%
 # Cleaning data; selecting relevant variables
   select(herd, state, breed, cows_in_milk, milk_lbs, fat_pct, 
-         protein_pct, fat_protein_lbs, ecm, date2, region) %>%
-  
+         protein_pct, fat_protein_lbs, ecm, date, region)  %>%
 # Cleaning data; rearranging variables  
   relocate(region, .after = state)
 
-# Replace 0 values with 'NA'
-milk_analysis[milk_analysis == 0] <- NA
 
 ```
 
@@ -166,39 +172,16 @@ milk_analysis[milk_analysis == 0] <- NA
 The first segment of the data we wished to explore was milk production dependent upon the breed of cow.  We found that the dairy cow breeds represented in our data set were Holstein, Jersey, Norwegian Red, Crossbred (combination of two or more breeds), and those that were not defined (NA).  We used the package ggplot2 to generate bar charts to compare average pounds of milk produced per day by each breed of cow.  We found that Holsteins produced the most milk on average (82.1 lbs/d) and that Jerseys produced the least amount of milk (62.3 lbs/d).
 
 ```{r}
-#install.packages("processx")
-#install.packages("devtools")
-#devtools::install_github("clauswilke/ggtextures")
-
-
-pictures <- tibble(
-  breed = c("Jersey", "Crossbred", "Norwegian Red", "Holstein"),
-  image = list(
-    image_read("./images/dairy/Jersey.jpg"),
-    image_read("./images/dairy/Crossbred.jpg"), 
-    image_read("./images/dairy/NorwegianR.jpg"),
-    image_read("./images/dairy/Holstein.jpg")
-  )
-)
-
 # Plot of milk pounds by breed of cow
 milk_lbs_breed <- milk_analysis %>%
   group_by(breed) %>%
   summarize(milk_lbs = mean(milk_lbs)) %>%
   left_join(pictures) %>%
-  drop_na() %>%
-  ggplot(aes(x=breed, y=milk_lbs, fill=breed, image = image)) +
-  # geom_bar(stat = "identity") +
-  scale_fill_manual(values=c("#800080","#3A3B3C", "#ECE5B6", "#C34A2C"))+
-  geom_col(
-    # img_height = NULL, img_width = grid::unit(1, "null"),
-    # ncol = 1, nrow = 1, hjust = 1, vjust = 0.5
-  ) +
-  # guides(fill = "none") +
-  # theme_minimal()+
-  labs(title="Milk Pounds by Breed of Cow", x="Breed", y="Milk Pounds") 
+  drop_na() 
 
-ggplotly(milk_lbs_breed)
+plotter1(data=milk_lbs_breed, x=breed, y=milk_lbs, fill=breed, image=image, label=milk_lbs ,vjust=-0.5) +
+    labs(title="Milk Pounds by Breed of Cow", x="Breed", y="Milk Pounds") 
+
 
 ```
 
@@ -206,24 +189,17 @@ While we found that Holstein cows produced the most fluid milk, average milk pou
 
 ```{r}
 # Plot of energy corrected milk pounds by breed of cow
-
 milk_lbs_ecm <- milk_analysis %>%
   group_by(breed) %>%
   summarize(ecm = mean(ecm, na.rm =T)) %>%
   left_join(pictures) %>%
-  drop_na() %>%
-  ggplot(aes(x=breed, y=ecm, fill=breed, image = image)) +
-  # geom_bar(stat = "identity") +
-  scale_fill_manual(values=c("#800080","#3A3B3C", "#ECE5B6", "#C34A2C"))+
-  geom_col(
-    # img_height = NULL, img_width = grid::unit(1, "null"),
-    # ncol = 1, nrow = 1, hjust = 1, vjust = 0.5
-  ) +
-  guides(fill = "none") +
-  # theme_minimal()+
-  labs(title="Energy Corrected Milk Pounds by Breed of Cow", x="Breed", y="ECM Pounds") 
+  drop_na()
+  
+plotter1(data=milk_lbs_ecm, x=breed, y=ecm, fill=breed, 
+         image=image, label=ecm ,vjust=-0.5) +
+    labs(title="Energy Corrected Milk Pounds by Breed of Cow", 
+         x="Breed", y="ECM Pounds") 
 
-ggplotly(milk_lbs_ecm)
 
 ```
 
@@ -236,19 +212,12 @@ component_lbs <- milk_analysis %>%
   group_by(breed) %>%
   summarize(fat_protein_lbs = mean(fat_protein_lbs,na.rm =T)) %>%
   left_join(pictures) %>%
-  drop_na() %>%
-  ggplot(aes(x=breed, y=fat_protein_lbs, fill=breed, image = image)) +
-  # geom_bar(stat = "identity") +
-  scale_fill_manual(values=c("#800080","#3A3B3C", "#ECE5B6", "#C34A2C"))+
-  geom_col(
-    # img_height = NULL, img_width = grid::unit(1, "null"),
-    # ncol = 1, nrow = 1, hjust = 1, vjust = 0.5
-  ) +
-  # guides(fill = "none") +
-  # theme_minimal()+
-  labs(title="Combined Fat and Protein Pounds by Breed of Cow", x="Breed", y="Fat and Protein Pounds") 
+  drop_na() 
 
-ggplotly(component_lbs)
+plotter1(data=component_lbs, x=breed, y=fat_protein_lbs, fill=breed, 
+         image=image, label=fat_protein_lbs, vjust=-0.5) +
+    labs(title="Combined Fat and Protein Pounds by Breed of Cow", 
+         x="Breed", y="Fat and Protein Pounds") 
 
 ```
 
@@ -256,20 +225,17 @@ While exploring breed differences, we noted that Jersey and Crossbred milk compo
 
 ```{r}
 # Compare milk fat and protein percent relationship
-
 # First calculating relationship including r^2
-
 # summary(lm(formula = protein_pct ~ fat_pct, data = milk_analysis))
-
 fat_protein_pct <- milk_analysis %>%
-  ggplot(aes(x=fat_pct, y=protein_pct,)) +
-  geom_point(stat = "identity", na.rm = FALSE) +
-  geom_smooth(method = "lm",
-              fromula = protein_pct ~ fat_pct) +
-  labs(title="Relationship of Milk Fat and Protein Percent", x="Milk Fat, %", y="Milk Protein, %") +
-  annotate("text", x = 6, y = 2.5, label = "y = 0.4032x + 1.6294, r^2 = 0.578")
+    drop_na(fat_pct, protein_pct) %>%
+    ggplot(aes(x=fat_pct, y=protein_pct)) +
+    geom_point(stat = "identity", na.rm = FALSE) +
+    geom_smooth(method = "lm") +
+    labs(title="Relationship of Milk Fat and Protein Percent", x="Milk Fat, %", y="Milk Protein, %") +
+    annotate("text", x = 6, y = 2.5, label = "y = 0.4032x + 1.6294, r^2 = 0.578")
 
-print(fat_protein_pct)
+fat_protein_pct
 
 ```
 
@@ -382,6 +348,8 @@ milk_histrogram <- milk_analysis %>%
 
 # milk_histrogram
 p1<-plotly_build(milk_histrogram)
+# names(p1$x$data) <-c("PNW", "UMW", "NE", "HP", "NA")
+# names(p1$x$data)
 p1$x$data[[1]]$name <- "PNW"
 p1$x$data[[2]]$name <- "UMW"
 p1$x$data[[3]]$name <- "NE"
@@ -409,7 +377,7 @@ milk_by_state <- milk_analysis %>%
 milk_by_state_viz <-  subset(milk_by_state, !is.na(state)) %>%
     plot_usmap(data= ., values = "milk_lbs", labels = TRUE) +
   scale_fill_gradient(low = "white", high = "red", name = NULL) +
-  ggtitle("Average Milk Production (lbs) by State")
+  ggtitle("Average Milk Production (lbs) by state")
 
 ggplotly(milk_by_state_viz)
 
@@ -430,7 +398,7 @@ cows_by_state <- milk_analysis %>%
 cows_by_state_viz <- subset(cows_by_state, !is.na(state)) %>%
   plot_usmap(data=., values = "cows_in_milk", labels = TRUE) +
   scale_fill_gradient(low = "white", high = "blue", name = NULL) +
-  ggtitle("Total Cows Tested by State")
+  ggtitle("Total Cows Tested by state")
 
 ggplotly(cows_by_state_viz)
 
@@ -452,7 +420,7 @@ milk_by_state_plot <- subset(milk_by_state, !is.na(state)) %>%
   mutate(state=reorder(state, milk_lbs)) %>%
   ggplot(aes(x=state, y=milk_lbs, fill=state)) + 
   geom_bar(stat="identity") +
-  labs(title="Milk Pounds by State", x="State", y="Milk Pounds") 
+  labs(title="Milk Pounds by state", x="state", y="Milk Pounds") 
 
 ggplotly(milk_by_state_plot)
 
@@ -469,39 +437,25 @@ Next, we generated similar plots over time for individual breeds.  Not surprisin
 ```{r}
 # Milk across time
 
-milk_by_time <- milk_analysis
-milk_by_time$date2 <- as.Date(milk_by_time$date2)
-
-milk_by_time$Month <- months(milk_by_time$date2)
-# milk_by_time$Year <- format(milk_by_time$date2,format="%y")
-milk_by_time$Year <- format(milk_by_time$date2,format="%Y")
-# milk_by_month <- aggregate(milk_lbs ~ Month + Year, milk_by_time, mean, na.rm=TRUE)
-
-milk_by_month2 <- aggregate(milk_lbs ~ Month + Year, milk_by_time, mean, na.rm=TRUE) %>%
-  mutate(date=as.Date(paste("01", Month, Year, sep = "-"), format = "%d-%b-%Y"))
-
-# milk_by_month_plot <- milk_by_month %>%
-#   unite(year_month,Year,Month) %>%
-#   group_by(year_month) %>%
-#   summarise(a=round(mean(milk_lbs, na.rm=TRUE),1))
-# 
-# ggplot(data=milk_by_month_plot, aes(x=year_month, y=a)) + geom_bar(stat = "identity") +
-#   scale_x_discrete(guide = guide_axis(check.overlap = TRUE)) +
-#   labs(title="Milk Production Across Time", x="Date", y="Milk Pounds") 
+milk_by_time <- milk_analysis %>%
+    mutate(Month = month(date), Year=year(date)) %>%
+    group_by(Month, Year) %>%
+    summarize(milk_lbs=mean(milk_lbs, na.rm=TRUE), .groups = "drop") %>%
+    mutate(date=as.Date(paste(Year, Month, "01", sep = "-")))
 
 # Most basic bubble plot
-p <- ggplot(milk_by_month2, aes(x=date, y=milk_lbs)) +
+p <- ggplot(milk_by_time, aes(x=date, y=milk_lbs)) +
   geom_line(color="#69b3a2") +
   geom_point() +
-  geom_smooth() +
-  # ylim(50,85) +
+  geom_smooth(method = "loess") +
   scale_x_date(date_breaks = "6 month", date_labels = "%b %Y",
-               limit=c(as.Date("2017-01-01"),max(milk_by_month2$date))) +
+               limit=c(as.Date("2017-01-01"), max(milk_by_month2$date))) +
   scale_color_manual(values = "#f8766d") +
   theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
   labs(title="Milk across time (overall)",  y="milk (lbs)", x="date")
 
 ggplotly(p)
+
 ```
 
 
@@ -509,28 +463,19 @@ ggplotly(p)
 # Milk production by Holsteins across time
 
 milk_by_time_holstein <- milk_analysis %>%
-  filter(breed=="Holstein")
-  
-milk_by_time_holstein$date2 <- as.Date(milk_by_time_holstein$date2)
-
-milk_by_time_holstein$Month <- months(milk_by_time_holstein$date2)
-# milk_by_time_holstein$Year <- format(milk_by_time_holstein$date2,format="%y")
-milk_by_time_holstein$Year <- format(milk_by_time_holstein$date2,format="%Y")
-# milk_by_time_holstein <- aggregate(milk_lbs ~ Month + Year, milk_by_time_holstein, mean, na.rm=TRUE)
-
-milk_by_time_holstein2 <- aggregate(milk_lbs ~ Month + Year, milk_by_time_holstein, mean, na.rm=TRUE) %>%
-  mutate(date=as.Date(paste("01", Month, Year, sep = "-"), format = "%d-%b-%Y"))
-
-
+    filter(breed=="Holstein") %>%
+    mutate(Month = month(date), Year=year(date)) %>%
+    group_by(Month, Year) %>%
+    summarize(milk_lbs=mean(milk_lbs, na.rm=TRUE), .groups = "drop") %>%
+    mutate(date=as.Date(paste(Year, Month, "01", sep = "-")))
 
 # Most basic bubble plot
-p <- ggplot(milk_by_time_holstein2, aes(x=date, y=milk_lbs)) +
+p <- ggplot(milk_by_time_holstein, aes(x=date, y=milk_lbs)) +
   geom_line(color="#FF9933") +
   geom_point() +
-  geom_smooth() +
-  # ylim(50,85) +
+  geom_smooth(method = "loess") +
   scale_x_date(date_breaks = "6 month", date_labels = "%b %Y", 
-               limit=c(as.Date("2017-01-01"),max(milk_by_time_holstein2$date))) +
+               limit=c(as.Date("2017-01-01"), max(milk_by_time_holstein$date))) +
   theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
   labs(title="Milk across time (Holstein)",  y="milk (lbs)", x="date")
 
@@ -540,31 +485,22 @@ ggplotly(p)
 
 ```{r}
 # Milk production by Jerseys across time
-
 milk_by_time_jersey <- milk_analysis %>%
-  filter(breed == "Jersey")
-
-milk_by_time_jersey$date2 <- as.Date(milk_by_time_jersey$date2)
-
-milk_by_time_jersey$Month <- months(milk_by_time_jersey$date2)
-# milk_by_time_jersey$Year <- format(milk_by_time_jersey$date2,format="%y")
-milk_by_time_jersey$Year <- format(milk_by_time_jersey$date2,format="%Y")
-# milk_by_time_jersey <- aggregate(milk_lbs ~ Month + Year, milk_by_time_jersey, mean, na.rm=TRUE)
-
-milk_by_time_jersey2 <- aggregate(milk_lbs ~ Month + Year, milk_by_time_jersey, mean, na.rm=TRUE) %>%
-  mutate(date=as.Date(paste("01", Month, Year, sep = "-"), format = "%d-%b-%Y"))
-
+    filter(breed == "Jersey") %>%
+    mutate(Month = month(date), Year=year(date)) %>%
+    group_by(Month, Year) %>%
+    summarize(milk_lbs=mean(milk_lbs, na.rm=TRUE), .groups = "drop") %>%
+    mutate(date=as.Date(paste(Year, Month, "01", sep = "-")))
 
 
 # Most basic bubble plot
-p <- ggplot(milk_by_time_jersey2, aes(x=date, y=milk_lbs)) +
-  geom_line(color="firebrick") +
-  geom_point() +
-  geom_smooth() +
-  # ylim(50,85) +
-  scale_x_date(date_breaks = "6 month", date_labels = "%b %Y") +
-  theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
-  labs(title="Milk across time (Jersey)",  y="milk (lbs)", x="date")
+p <- ggplot(milk_by_time_jersey, aes(x=date, y=milk_lbs)) +
+    geom_line(color="firebrick") +
+    geom_point() + 
+    geom_smooth(method = "loess") +
+    scale_x_date(date_breaks = "6 month", date_labels = "%b %Y") +
+    theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
+    labs(title="Milk across time (Jersey)",  y="milk (lbs)", x="date")
 
 ggplotly(p)
 ```
@@ -573,22 +509,14 @@ ggplotly(p)
 # Milk production by Crossbred across time
 
 milk_by_time_crossbred <- milk_analysis %>%
-  filter(breed == "Crossbred")
-
-milk_by_time_crossbred$date2 <- as.Date(milk_by_time_crossbred$date2)
-
-milk_by_time_crossbred$Month <- months(milk_by_time_crossbred$date2)
-# milk_by_time_crossbred$Year <- format(milk_by_time_crossbred$date2,format="%y")
-milk_by_time_crossbred$Year <- format(milk_by_time_crossbred$date2,format="%Y")
-# milk_by_time_crossbred <- aggregate(milk_lbs ~ Month + Year, milk_by_time_crossbred, mean, na.rm=TRUE)
-
-milk_by_time_crossbred2 <- aggregate(milk_lbs ~ Month + Year, milk_by_time_crossbred, mean, na.rm=TRUE) %>%
-  mutate(date=as.Date(paste("01", Month, Year, sep = "-"), format = "%d-%b-%Y"))
-
-
+    filter(breed == "Crossbred") %>%
+    mutate(Month = month(date), Year=year(date)) %>%
+    group_by(Month, Year) %>%
+    summarize(milk_lbs=mean(milk_lbs, na.rm=TRUE), .groups = "drop") %>%
+    mutate(date=as.Date(paste(Year, Month, "01", sep = "-")))
 
 # Most basic bubble plot
-p <- ggplot(milk_by_time_crossbred2, aes(x=date, y=milk_lbs)) +
+p <- ggplot(milk_by_time_crossbred, aes(x=date, y=milk_lbs)) +
   geom_line(color="steelblue") +
   geom_point() +
   geom_smooth() +
