@@ -25,9 +25,8 @@ options(digits = 3)
 ```
 
 ```{r dataprep, include=FALSE}
-
+# devtools::install_github("clauswilke/ggtextures")
 library(tidyverse)
-library(ggtextures)
 library(ggtextures)
 library(magick)
 library(rsvg)
@@ -57,7 +56,8 @@ plotter1 <- function(data, x=NA, y=NA, fill=NA, image=NA, label=NA, ...){
     img_height = NULL, img_width = grid::unit(1, "null"),
     ncol = 1, nrow = 1, hjust = 1, vjust = 0.5) +
     geom_text(size = 8, position = position_dodge2(width = .9, preserve = "single"))  +
-    scale_y_continuous(expand = expansion(mult = c(0, .2)))
+    scale_y_continuous(expand = expansion(mult = c(0, .2))) +
+    theme(legend.position = "none")
 }
 
 
@@ -68,6 +68,7 @@ plotter1 <- function(data, x=NA, y=NA, fill=NA, image=NA, label=NA, ...){
 The data set we selected for our analysis is a collection of aggregated milk production and herd data from actual dairy farms across the United states. The data was provided by a dairy nutrition consulting company in Omaha, NE, who as part of their services, collects and analyzes dairy records to help inform producer decisions.  The data originates at the farm level from monthly "tests", where the milk production and milk component data (fat and protein %) from individual cows are measured and stored on various herd management software platforms owned by the dairies.  These data are then collected by the nutrition consulting company and are summarized into reports for individual herds.
 
 According to the dairy nutrition consulting company, the data has rarely been assessed on a grand scale (i.e. all analyses have previously been conducted at the herd level).  Therefore, our group was chiefly interested in exploring the data set in its entirety, drawing comparisons in milk production performance between breeds of cows, state in which the milk is produced, and milk production over time.  
+
 
 ## Description of Dataset
 
@@ -113,7 +114,7 @@ The first step in our analysis was to read in the data.  The data was stored in 
 
 ```{r}
 
-skim(milk_data)
+# skim(milk_data)
 
 ```
 
@@ -449,7 +450,7 @@ p <- ggplot(milk_by_time, aes(x=date, y=milk_lbs)) +
   geom_point() +
   geom_smooth(method = "loess") +
   scale_x_date(date_breaks = "6 month", date_labels = "%b %Y",
-               limit=c(as.Date("2017-01-01"), max(milk_by_month2$date))) +
+               limit=c(as.Date("2017-01-01"), max(milk_by_time$date))) +
   scale_color_manual(values = "#f8766d") +
   theme(axis.text.x = element_text(angle=45, vjust=0.6)) +
   labs(title="Milk across time (overall)",  y="milk (lbs)", x="date")
