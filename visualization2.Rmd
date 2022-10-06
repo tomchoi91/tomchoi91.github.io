@@ -67,6 +67,12 @@ plotter1 <- function(data, x=NA, y=NA, fill=NA, image=NA, label=NA, ...){
 
 ```
 
+
+## Project Overview
+
+This is one of my class project I conducted with my classmates at STAT 850: Computing Tools for Statisticians. It was a group project and in this portfolio I recreated all the outcomes using my own code.
+
+
 ## Introduction
 
 The data set we selected for our analysis is a collection of aggregated milk production and herd data from actual dairy farms across the United states. The data was provided by a dairy nutrition consulting company in Omaha, NE, who as part of their services, collects and analyzes dairy records to help inform producer decisions.  The data originates at the farm level from monthly "tests", where the milk production and milk component data (fat and protein %) from individual cows are measured and stored on various herd management software platforms owned by the dairies.  These data are then collected by the nutrition consulting company and are summarized into reports for individual herds.
@@ -81,7 +87,7 @@ https://www.dropbox.com/s/p83hoqvs03byonw/dairy_performance.csv?dl=0
 The data was collected over a period of six years from commercial dairy farms (2016 - 2021) in 16 states.  There are a number of performance metrics listed in the data set as related to dairy production (milk yield, fat and protein percent, etc.) as well as herd dynamics and reproduction statistics.  The variables our group was primarily interested in are described below:
 
 * HERD NAME: Anonymised listing of herds (to protect producer privacy)
-* state: state abbreviation (U.S.A.)
+* STATE: state abbreviation (U.S.A.)
 * BREED:  Breed type of dairy cow
 * TOTAL COWS:  Total cows in the herd, including lactating and non-lactating
 * COWS IN MILK:  Total lactating cows in the herd

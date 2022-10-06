@@ -15,7 +15,7 @@ output: html_document
 
 👋 Hello, my name is **Dongho Choi**. Please call me **Tom**. 😊
 
-🎓 I earned a M.A. in Educational Psychology at the University of Nebraska-Lincoln (August 2022). I am getting a M.S. in Statistics as well (August 2023).
+🎓 I earned a M.A. in Educational Psychology at the University of Nebraska-Lincoln (August 2022). I am getting a M.S. in Statistics as well (May 2023).
 
 💼 Currently working as a graduate research assistant at Nebraska Academy for Methodology, Analytics & Psychometrics at UNL. I have participated in more than a dozen projects with a focus on child education and intervention projects. My responsibility in the projects includes, but is not limited to: Data cleaning, data management, statistical analysis, reporting the results, and supporting journal submission by writing and reviewing methods and results.
 
