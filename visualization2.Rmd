@@ -70,7 +70,7 @@ plotter1 <- function(data, x=NA, y=NA, fill=NA, image=NA, label=NA, ...){
 
 ## Project Overview
 
-This is one of my class project I conducted with my classmates at STAT 850: Computing Tools for Statisticians. It was a group project and in this portfolio I recreated all the outcomes using my own code.
+This is one of my class projects I conducted with my classmates at STAT 850: Computing Tools for Statisticians. Since it was a group project, in this portfolio I recreated all the outcomes using my own code.
 
 
 ## Introduction
