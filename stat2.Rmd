@@ -38,7 +38,7 @@ library(officer) # for fp_border
 ```
 
 
-## 1. Dataset overview
+## 1. Dataset Overview
 
 
 **Description** 
@@ -63,7 +63,7 @@ A data frame containing the observations from the GBSG2 study (n=686).
 W. Sauerbrei and P. Royston (1999). Building multivariable prognostic and diagnostic models: transformation of the predictors by using fractional polynomials. Journal of the Royal Statistics Society Series A, Volume 162(1), 71–94.
 
 
-## 2. Summary table
+## 2. Summary Table
 
 Following is a summary table of the data set. There were significant difference in the `age` (P<0.001), `menostat` (P<0.001), and `estrec` (P=0.009) variables between hormone therapy treatments(no vs. yes).
 
@@ -75,7 +75,7 @@ GBSG2[,1:8] %>% tbl_summary(by=horTh) %>% add_overall() %>% add_p() %>%
 ```
 
 
-## 3. Matching using nearest neighbor 
+## 3. Matching using Nearest Neighbor 
 
 
 Following is the result of 1:1 nearest neighbor matching without replacement
@@ -89,7 +89,7 @@ summary(matched)
 ```
 
 
-## 4. Matched data (n=492)
+## 4. Matched Data (n=492)
 
 Following is first 6 rows of the matched data.
 
