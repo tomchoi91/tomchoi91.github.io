@@ -20,6 +20,8 @@ output:
 
 ### Journal Articles
 
+- Babik, I., Cunha, A. B., **Choi, D.**, Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (2022). The Effect of START-Play Intervention on Reaching-Related Exploratory Behaviors in Children with Neuromotor Delays: A Secondary Analysis of a Randomized Controlled Trial. *Physical & Occupational Therapy In Pediatrics*. https://doi.org/10.1080/01942638.2022.2131501 
+
 - Iruka, I., Sheridan, S., Koziol, N., Schumacher, R., Kerby, H., Prokasky, A., & **Choi, D.** (2022). Examining Malleable Factors That Explain the End-of-Kindergarten Racial/Ethnic Gaps. *The Elementary School Journal*, 122(3), 378–410. https://doi.org/10.1086/718072
 
 - Shin, S., Song, Y., Ha, J., **Choi, D.** (2017). The Relationship among Stress, Anger, and Problem Drinking in ex-prisoners in Korea. *Korean Journal of Probation*, 17(2). 197-230. 
@@ -28,14 +30,14 @@ output:
 
 ### Technical Reports
 
+- Nord, J., & **Choi, D.** (2022). *4-H National Call for Data College & Career Readiness.* Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
+
 - Reichenberg, R. E., **Choi, D.**, & Nord, J., (2021). *4-H National Call for Data: College & Career Readiness*. Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
 
 - Koziol, N., **Choi, D.**, Nord, J., Howell Smith, M. C., & Stevens, J. (2019). *4-H Common Measures 2.0 (CM 2.0): National Call for Data*. Lincoln, NE: Nebraska Academy for Methodology, Analytics & Psychometrics.
 
 
 ### Manuscripts Under Review
-
-- Babik, I., Cunha, A. B., **Choi, D.**, Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) The Effect of START-Play Intervention on Reaching-Related Exploratory Behaviors in Children with Neuromotor Delays: Randomized Controlled Trial. Submitted to *Physical and Occupational Therapy in Pediatrics*.
 
 - Cunha, A. B., Babik, I., **Choi, D.**, Koziol, N., Harbourne, R., Dusing, S., Westcott-McCoy, S., Bovaird, J., Willett, S., & Lobo, M. A. (under review) The Impact of Severity of Motor Delay, Timing of Task Mastery, and START-Play Intervention on the Development of Means-End Problem Solving in Young Children. Submitted to *Research in Developmental Disabilities*.
 
