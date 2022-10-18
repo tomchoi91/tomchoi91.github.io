@@ -379,10 +379,11 @@ milk_by_state <- milk_analysis %>%
             c=round(mean(fat_pct, na.rm=TRUE),1),
             d=round(mean(protein_pct, na.rm=TRUE),1),
             e=round(mean(fat_protein_lbs, na.rm=TRUE),1),
-            f=round(mean(ecm, na.rm=TRUE),1))
+            f=round(mean(ecm, na.rm=TRUE),1)) %>%
+    drop_na(state)
 
-milk_by_state_viz <-  subset(milk_by_state, !is.na(state)) %>%
-    plot_usmap(data= ., values = "milk_lbs", labels = TRUE) +
+milk_by_state_viz <-  plot_usmap(data= milk_by_state, 
+                                 values = "milk_lbs", labels = TRUE) +
   scale_fill_gradient(low = "white", high = "red", name = NULL) +
   ggtitle("Average Milk Production (lbs) by state")
 
@@ -400,10 +401,11 @@ cows_by_state <- milk_analysis %>%
             c=round(mean(fat_pct, na.rm=TRUE),1),
             d=round(mean(protein_pct, na.rm=TRUE),1),
             e=round(mean(fat_protein_lbs, na.rm=TRUE),1),
-            f=round(mean(ecm, na.rm=TRUE),1))
+            f=round(mean(ecm, na.rm=TRUE),1)) %>%
+    drop_na(state)
 
-cows_by_state_viz <- subset(cows_by_state, !is.na(state)) %>%
-  plot_usmap(data=., values = "cows_in_milk", labels = TRUE) +
+cows_by_state_viz <- plot_usmap(data=cows_by_state, 
+                                values = "cows_in_milk", labels = TRUE) +
   scale_fill_gradient(low = "white", high = "blue", name = NULL) +
   ggtitle("Total Cows Tested by state")
 
@@ -414,16 +416,7 @@ ggplotly(cows_by_state_viz)
 ```{r}
 # Compare milk production by state
 
-milk_by_state <- milk_analysis %>%
-  group_by(state) %>%
-  summarise(a=round(mean(cows_in_milk, na.rm=TRUE),1),
-            milk_lbs=round(mean(milk_lbs, na.rm=TRUE),1),
-            c=round(mean(fat_pct, na.rm=TRUE),1),
-            d=round(mean(protein_pct, na.rm=TRUE),1),
-            e=round(mean(fat_protein_lbs, na.rm=TRUE),1),
-            f=round(mean(ecm, na.rm=TRUE),1))
-
-milk_by_state_plot <- subset(milk_by_state, !is.na(state)) %>%
+milk_by_state_plot <- milk_by_state %>%
   mutate(state=reorder(state, milk_lbs)) %>%
   ggplot(aes(x=state, y=milk_lbs, fill=state)) + 
   geom_bar(stat="identity") +
